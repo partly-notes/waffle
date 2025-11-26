@@ -24,10 +24,13 @@ bedrock:
 # Storage configuration
 storage:
   # Directory for session data
+  # Default: ~/.waffle/sessions (global, shared across projects)
   session_dir: ~/.waffle/sessions
   
   # Directory for log files
-  log_dir: ~/.waffle/logs
+  # Default: .waffle/logs (in current directory, per-project)
+  # Uncomment to use global log directory instead:
+  # log_dir: ~/.waffle/logs
   
   # Number of days to retain session data
   retention_days: 90

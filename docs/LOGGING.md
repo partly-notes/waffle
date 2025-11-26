@@ -7,11 +7,36 @@ Waffle uses a comprehensive structured logging system built on Go's `log/slog` p
 - **Structured Logging**: Key-value pairs for easy parsing and analysis
 - **Multiple Log Levels**: DEBUG, INFO, WARNING, ERROR
 - **Multiple Outputs**: Console (stderr) and file logging simultaneously
-- **File Management**: Daily log files stored in `~/.waffle/logs/`
+- **File Management**: Daily log files stored in `.waffle/logs/` (current directory by default)
 - **Error Context**: Rich error types with troubleshooting guidance
 - **Context Integration**: Correlation IDs, session IDs, and workload IDs
 
 ## Quick Start
+
+### Configuration
+
+By default, Waffle writes logs to `.waffle/logs/` in the **current working directory** where you run the command. This keeps logs with your IaC project.
+
+To use a global log directory instead, create a configuration file at `~/.waffle/config.yaml`:
+
+```yaml
+storage:
+  # Use global log directory (optional)
+  log_dir: ~/.waffle/logs
+  
+  # Sessions are global by default
+  session_dir: ~/.waffle/sessions
+  retention_days: 90
+
+logging:
+  level: INFO
+  format: text
+```
+
+**Note**: 
+- Without a config file, logs are written to `.waffle/logs/` in your current directory
+- Sessions are stored globally in `~/.waffle/sessions/` by default (shared across projects)
+- Logs are per-project by default (keeps logs with your IaC)
 
 ### Environment Variable
 
@@ -27,22 +52,29 @@ Available levels: `DEBUG`, `INFO`, `WARNING`, `ERROR` (default: `INFO`)
 ### Log Files
 
 Logs are automatically written to:
-- **Location**: `~/.waffle/logs/`
+- **Default Location**: `.waffle/logs/` (in your current working directory)
 - **Format**: `waffle-YYYY-MM-DD.log`
 - **Rotation**: New file created daily
 - **Permissions**: `0644` (readable by owner and group)
 
+**Example**: If you run `waffle review` from `/home/user/my-terraform-project/`, logs will be in `/home/user/my-terraform-project/.waffle/logs/`
+
+**Note**: You can configure a global log directory (like `~/.waffle/logs/`) in `~/.waffle/config.yaml` under `storage.log_dir`.
+
 ### Viewing Logs
 
 ```bash
-# View today's log
-tail -f ~/.waffle/logs/waffle-$(date +%Y-%m-%d).log
+# View today's log (from your project directory)
+tail -f .waffle/logs/waffle-$(date +%Y-%m-%d).log
 
 # View all logs
-cat ~/.waffle/logs/waffle-*.log
+cat .waffle/logs/waffle-*.log
 
 # Search for errors
-grep "level=ERROR" ~/.waffle/logs/waffle-*.log
+grep "level=ERROR" .waffle/logs/waffle-*.log
+
+# If using global log directory (via config file)
+tail -f ~/.waffle/logs/waffle-$(date +%Y-%m-%d).log
 ```
 
 ## Log Format
@@ -141,11 +173,14 @@ Solutions:
 Waffle does not automatically delete old log files. To clean up old logs:
 
 ```bash
-# Remove logs older than 30 days
-find ~/.waffle/logs/ -name "waffle-*.log" -mtime +30 -delete
+# Remove logs older than 30 days (from current directory)
+find .waffle/logs/ -name "waffle-*.log" -mtime +30 -delete
 
 # Remove logs older than 7 days
-find ~/.waffle/logs/ -name "waffle-*.log" -mtime +7 -delete
+find .waffle/logs/ -name "waffle-*.log" -mtime +7 -delete
+
+# If using global log directory
+find ~/.waffle/logs/ -name "waffle-*.log" -mtime +30 -delete
 ```
 
 ### Disk Space Monitoring
@@ -153,6 +188,10 @@ find ~/.waffle/logs/ -name "waffle-*.log" -mtime +7 -delete
 Check log directory size:
 
 ```bash
+# Current directory logs
+du -sh .waffle/logs/
+
+# Global logs (if configured)
 du -sh ~/.waffle/logs/
 ```
 
@@ -194,13 +233,16 @@ level=INFO msg="review execution completed" questions_evaluated=50 risks_identif
 
 ### No Log Files Created
 
-**Problem**: Log files are not being created in `~/.waffle/logs/`
+**Problem**: Log files are not being created
 
 **Solutions**:
-1. Check directory permissions: `ls -ld ~/.waffle/logs/`
-2. Verify disk space: `df -h ~`
-3. Check for errors in console output
-4. Try running with DEBUG level: `WAFFLE_LOG_LEVEL=DEBUG waffle review --workload-id test`
+1. Check if logs are in your current directory: `ls -la .waffle/logs/`
+2. Verify you're in the right directory where you ran waffle
+3. Check disk space: `df -h .`
+4. Check directory permissions: `ls -ld .waffle/logs/`
+5. Check for errors in console output (stderr)
+6. Try running with DEBUG level: `WAFFLE_LOG_LEVEL=DEBUG waffle review --workload-id test`
+7. If using a config file, verify: `cat ~/.waffle/config.yaml` (check `storage.log_dir`)
 
 ### Log Files Too Large
 

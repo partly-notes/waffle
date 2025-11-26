@@ -52,18 +52,88 @@ waffle/
   - `golang.org/x/sync/errgroup` - Concurrent error handling
   - `golang.org/x/time/rate` - Rate limiting
 
-## Building
+## Installation
+
+### Download Pre-built Binary
+
+Download the latest release for your platform from [GitHub Releases](https://github.com/waffle/waffle/releases):
 
 ```bash
-# Build the CLI
-go build -o waffle ./cmd/waffle
+# Linux (amd64)
+wget https://github.com/waffle/waffle/releases/download/v1.0.0/waffle-v1.0.0-linux-amd64.tar.gz
+tar -xzf waffle-v1.0.0-linux-amd64.tar.gz
+sudo mv waffle-v1.0.0-linux-amd64 /usr/local/bin/waffle
 
-# Run tests
-go test ./...
-
-# Run property-based tests
-go test -v ./internal/core -run TestProperty
+# macOS (Apple Silicon)
+curl -LO https://github.com/waffle/waffle/releases/download/v1.0.0/waffle-v1.0.0-darwin-arm64.tar.gz
+tar -xzf waffle-v1.0.0-darwin-arm64.tar.gz
+sudo mv waffle-v1.0.0-darwin-arm64 /usr/local/bin/waffle
 ```
+
+### Using Go Install
+
+If you have Go 1.21+ installed:
+
+```bash
+go install github.com/waffle/waffle/cmd/waffle@latest
+```
+
+This installs the binary to `$GOPATH/bin` (or `~/go/bin` by default). Make sure this directory is in your PATH:
+
+```bash
+# Add to ~/.bashrc or ~/.zshrc if needed
+export PATH=$PATH:$(go env GOPATH)/bin
+```
+
+### Using Docker
+
+```bash
+docker pull ghcr.io/waffle/waffle:latest
+
+# Run with AWS credentials
+docker run --rm -it \
+  -v ~/.aws:/root/.aws:ro \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  ghcr.io/waffle/waffle:latest \
+  review --workload-id my-app
+```
+
+### Build from Source
+
+```bash
+git clone https://github.com/waffle/waffle.git
+cd waffle
+make build
+sudo mv build/waffle /usr/local/bin/
+```
+
+## Building
+
+### Quick Build
+
+```bash
+make build          # Build for current platform
+make test           # Run tests
+make docker-build   # Build Docker image
+```
+
+### Cross-Platform Builds
+
+```bash
+make build-all      # Build for all platforms
+make release        # Create release archives with checksums
+```
+
+### Development
+
+```bash
+make dev            # Quick dev build and version check
+make test-coverage  # Run tests with coverage report
+make lint           # Run linter (requires golangci-lint)
+```
+
+Run `make help` to see all available targets.
 
 ## Usage
 
@@ -140,6 +210,50 @@ waffle results <session-id> --format pdf --output report.pdf
 
 ```bash
 waffle compare <session-id-1> <session-id-2>
+```
+
+## Contributing
+
+### Prerequisites
+
+- Go 1.21 or later
+- AWS credentials configured
+- Make (optional but recommended)
+
+### Development Workflow
+
+```bash
+# Clone the repository
+git clone https://github.com/waffle/waffle.git
+cd waffle
+
+# Install dependencies
+go mod download
+
+# Run tests
+make test
+
+# Build
+make build
+
+# Run locally
+./build/waffle --version
+```
+
+### Running Tests
+
+```bash
+make test                # All tests
+make test-coverage       # With coverage report
+make test-property       # Property-based tests only
+```
+
+### Code Quality
+
+```bash
+make fmt                 # Format code
+make vet                 # Run go vet
+make lint                # Run golangci-lint
 ```
 
 ## Development Status
