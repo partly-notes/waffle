@@ -10,9 +10,11 @@ waffle
 *.test
 
 # Output of the go coverage tool
+*.out
 
 # Dependency directories
 vendor/
+.venv/
 venv/
 env/
 
@@ -31,6 +33,7 @@ go.work
 Thumbs.db
 
 # Local configuration
+.waffle/
 config.yaml
 *.local
 
