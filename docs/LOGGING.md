@@ -308,16 +308,6 @@ if err := someOperation(); err != nil {
     )
 }
 ```
-
-### Custom Log Directory
-
-To use a custom log directory, set it before running Waffle:
-
-```bash
-# Not currently supported via CLI
-# Requires code modification to Config
-```
-
 ### JSON Output for Log Aggregation
 
 For integration with log aggregation systems (ELK, Splunk, etc.), JSON format is recommended:
@@ -326,27 +316,3 @@ For integration with log aggregation systems (ELK, Splunk, etc.), JSON format is
 config := logging.DefaultConfig()
 config.EnableJSON = true
 ```
-
-## Performance Considerations
-
-- **File I/O**: Logs are buffered for performance
-- **Multiple Handlers**: File and console logging have minimal overhead
-- **JSON Formatting**: Slightly slower than text format
-- **Debug Level**: Includes source file information (slower)
-
-## Security Considerations
-
-- **Sensitive Data**: Never logged (credentials, keys, PII are redacted)
-- **File Permissions**: Log files are created with `0644` permissions
-- **Directory Permissions**: Log directory is created with `0755` permissions
-- **Audit Trail**: All operations are logged for compliance
-
-## Support
-
-For issues with logging:
-
-1. Check this documentation
-2. Review error messages and troubleshooting guidance
-3. Enable DEBUG logging for detailed traces
-4. Check GitHub issues: https://github.com/waffle/waffle/issues
-5. Contact support with log excerpts (redact sensitive information)

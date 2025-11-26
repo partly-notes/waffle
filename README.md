@@ -56,16 +56,16 @@ waffle/
 
 ### Download Pre-built Binary
 
-Download the latest release for your platform from [GitHub Releases](https://github.com/waffle/waffle/releases):
+Download the latest release for your platform from [GitHub Releases](https://github.com/partly-notes/waffle/releases):
 
 ```bash
 # Linux (amd64)
-wget https://github.com/waffle/waffle/releases/download/v1.0.0/waffle-v1.0.0-linux-amd64.tar.gz
+wget https://github.com/partly-notes/waffle/releases/download/v1.0.0/waffle-v1.0.0-linux-amd64.tar.gz
 tar -xzf waffle-v1.0.0-linux-amd64.tar.gz
 sudo mv waffle-v1.0.0-linux-amd64 /usr/local/bin/waffle
 
 # macOS (Apple Silicon)
-curl -LO https://github.com/waffle/waffle/releases/download/v1.0.0/waffle-v1.0.0-darwin-arm64.tar.gz
+curl -LO https://github.com/partly-notes/waffle/releases/download/v1.0.0/waffle-v1.0.0-darwin-arm64.tar.gz
 tar -xzf waffle-v1.0.0-darwin-arm64.tar.gz
 sudo mv waffle-v1.0.0-darwin-arm64 /usr/local/bin/waffle
 ```
@@ -75,7 +75,7 @@ sudo mv waffle-v1.0.0-darwin-arm64 /usr/local/bin/waffle
 If you have Go 1.21+ installed:
 
 ```bash
-go install github.com/waffle/waffle/cmd/waffle@latest
+go install github.com/partly-notes/waffle/cmd/waffle@latest
 ```
 
 This installs the binary to `$GOPATH/bin` (or `~/go/bin` by default). Make sure this directory is in your PATH:
@@ -88,21 +88,21 @@ export PATH=$PATH:$(go env GOPATH)/bin
 ### Using Docker
 
 ```bash
-docker pull ghcr.io/waffle/waffle:latest
+docker pull ghcr.io/partly-notes/waffle:latest
 
 # Run with AWS credentials
 docker run --rm -it \
   -v ~/.aws:/root/.aws:ro \
   -v $(pwd):/workspace \
   -w /workspace \
-  ghcr.io/waffle/waffle:latest \
+  ghcr.io/partly-notes/waffle:latest \
   review --workload-id my-app
 ```
 
 ### Build from Source
 
 ```bash
-git clone https://github.com/waffle/waffle.git
+git clone https://github.com/partly-notes/waffle.git
 cd waffle
 make build
 sudo mv build/waffle /usr/local/bin/
@@ -224,7 +224,7 @@ waffle compare <session-id-1> <session-id-2>
 
 ```bash
 # Clone the repository
-git clone https://github.com/waffle/waffle.git
+git clone https://github.com/partly-notes/waffle.git
 cd waffle
 
 # Install dependencies

@@ -992,8 +992,8 @@ func GenReviewScope() gopter.Gen {
 
 **Package Distribution**:
 - **GitHub Releases**: Pre-compiled binaries for Linux (amd64, arm64), macOS (amd64, arm64), Windows (amd64)
-- **Go Install**: `go install github.com/waffle/waffle/cmd/waffle@latest`
-- **Docker**: `docker pull ghcr.io/waffle/waffle:latest`
+- **Go Install**: `go install github.com/partly-notes/waffle/cmd/waffle@latest`
+- **Docker**: `docker pull ghcr.io/partly-notes/waffle:latest`
 - **Build from Source**: Clone repository and run `make build`
 
 **Dependencies**:
@@ -1077,7 +1077,7 @@ security:
 **First-Time Setup**:
 ```bash
 # 1. Install Waffle CLI
-# Download from GitHub Releases or use: go install github.com/waffle/waffle/cmd/waffle@latest
+# Download from GitHub Releases or use: go install github.com/partly-notes/waffle/cmd/waffle@latest
 
 # 2. Configure AWS credentials (if not already done)
 aws configure
