@@ -291,7 +291,7 @@
   - Log all errors with context
   - Provide clear error messages for users
   - Include troubleshooting guidance in error messages
-  - Store logs in ~/.waffle/logs/
+  - Store logs in .waffle/logs/ (current directory by default)
   - _Requirements: 7.4_
 
 - [x] 24. Implement configuration management
@@ -356,7 +356,7 @@
   - Document AWS permissions required
   - _Requirements: All_
 
-- [ ] 29. Build and package
+- [x] 29. Build and package
   - Set up Go build for multiple platforms (Linux, macOS, Windows)
   - Create release binaries
   - Set up Docker image

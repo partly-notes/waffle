@@ -755,7 +755,7 @@ Property 26: Plan prioritization
 - Log all errors with timestamps
 - Include stack traces for debugging
 - Track error frequency for monitoring
-- Store logs in: `~/.waffle/logs/`
+- Store logs in: `.waffle/logs/` (current directory by default, configurable to global directory)
 
 ### Sensitive Data Handling
 
@@ -991,13 +991,20 @@ func GenReviewScope() gopter.Gen {
 ### Installation
 
 **Package Distribution**:
-- Homebrew: `brew install waffle`
-- Direct download: Pre-compiled binaries for Linux, macOS, Windows
-- Docker image: `docker pull waffle/wafr:latest`
-- Go install: `go install github.com/yourorg/waffle@latest`
+- **GitHub Releases**: Pre-compiled binaries for Linux (amd64, arm64), macOS (amd64, arm64), Windows (amd64)
+- **Go Install**: `go install github.com/waffle/waffle/cmd/waffle@latest`
+- **Docker**: `docker pull ghcr.io/waffle/waffle:latest`
+- **Build from Source**: Clone repository and run `make build`
 
 **Dependencies**:
-- Go 1.21+
+- Go 1.21+ (for building from source)
+- Docker (optional, for containerized deployment)
+
+**Build System**:
+- Makefile with targets for building, testing, and releasing
+- GitHub Actions for automated CI/CD
+- Cross-platform builds for all major platforms
+- Docker multi-stage builds for minimal image size
 - AWS SDK for Go v2 (github.com/aws/aws-sdk-go-v2)
   - wellarchitected service client
   - bedrockruntime service client
@@ -1029,8 +1036,8 @@ bedrock:
   temperature: 0.7
 
 storage:
-  session_dir: ~/.waffle/sessions
-  log_dir: ~/.waffle/logs
+  session_dir: ~/.waffle/sessions  # Global session storage
+  # log_dir: ~/.waffle/logs        # Optional: global logs (default: .waffle/logs in current directory)
   retention_days: 90
 
 iac:
@@ -1070,7 +1077,7 @@ security:
 **First-Time Setup**:
 ```bash
 # 1. Install Waffle CLI
-brew install waffle  # or download binary
+# Download from GitHub Releases or use: go install github.com/waffle/waffle/cmd/waffle@latest
 
 # 2. Configure AWS credentials (if not already done)
 aws configure

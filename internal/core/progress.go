@@ -32,7 +32,8 @@ func (p *CLIProgressReporter) ReportProgress(current, total int, message string)
 	if total > 0 {
 		percentage := (current * 100) / total
 		bar := progressBar(current, total, 30)
-		fmt.Fprintf(p.writer, "\r  [%s] %d%% - %s", bar, percentage, message)
+		// Clear the line first to handle any log output that may have appeared
+		fmt.Fprintf(p.writer, "\r\033[K  [%s] %d%% - %s", bar, percentage, message)
 		if current == total {
 			fmt.Fprintf(p.writer, "\n")
 		}
