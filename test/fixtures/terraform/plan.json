@@ -1,0 +1,84 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.5.0",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_s3_bucket.example",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "example",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "values": {
+            "bucket": "my-test-bucket",
+            "tags": {
+              "Environment": "test",
+              "Name": "Test Bucket"
+            }
+          }
+        },
+        {
+          "address": "aws_s3_bucket_versioning.example",
+          "mode": "managed",
+          "type": "aws_s3_bucket_versioning",
+          "name": "example",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "values": {
+            "bucket": "my-test-bucket",
+            "versioning_configuration": {
+              "status": "Enabled"
+            }
+          }
+        }
+      ],
+      "child_modules": [
+        {
+          "address": "module.vpc",
+          "resources": [
+            {
+              "address": "module.vpc.aws_vpc.main",
+              "mode": "managed",
+              "type": "aws_vpc",
+              "name": "main",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "values": {
+                "cidr_block": "10.0.0.0/16",
+                "enable_dns_hostnames": true,
+                "enable_dns_support": true,
+                "tags": {
+                  "Name": "main-vpc"
+                }
+              }
+            },
+            {
+              "address": "module.vpc.aws_subnet.private",
+              "mode": "managed",
+              "type": "aws_subnet",
+              "name": "private",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "values": {
+                "cidr_block": "10.0.1.0/24",
+                "vpc_id": "vpc-12345",
+                "availability_zone": "us-east-1a",
+                "tags": {
+                  "Name": "private-subnet"
+                }
+              }
+            }
+          ],
+          "child_modules": []
+        }
+      ]
+    }
+  },
+  "configuration": {
+    "root_module": {
+      "module_calls": {
+        "vpc": {
+          "source": "./modules/vpc"
+        }
+      }
+    }
+  }
+}

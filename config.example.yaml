@@ -1,0 +1,76 @@
+# Waffle Configuration Example
+# Copy this file to ~/.waffle/config.yaml and customize as needed
+
+# Bedrock configuration
+bedrock:
+  # AWS region where Bedrock is available
+  region: us-west-2
+  
+  # Bedrock model ID to use for analysis (using cross-region inference profile)
+  model_id: us.anthropic.claude-sonnet-4-20250514-v1:0
+  
+  # Maximum number of retries for Bedrock API calls
+  max_retries: 3
+  
+  # Timeout for Bedrock API calls (seconds)
+  timeout: 60
+  
+  # Maximum tokens to generate
+  max_tokens: 4096
+  
+  # Temperature for model responses (0.0-1.0)
+  temperature: 0.7
+
+# Storage configuration
+storage:
+  # Directory for session data
+  session_dir: ~/.waffle/sessions
+  
+  # Directory for log files
+  log_dir: ~/.waffle/logs
+  
+  # Number of days to retain session data
+  retention_days: 90
+
+# Infrastructure-as-Code configuration
+iac:
+  # IaC framework (currently only terraform is supported)
+  framework: terraform
+  
+  # Maximum file size in MB
+  max_file_size_mb: 10
+  
+  # Maximum number of files to process
+  max_files: 10000
+
+# Well-Architected Framework Review configuration
+wafr:
+  # Default scope for reviews (workload, pillar, or question)
+  default_scope: workload
+  
+  # Default lens to use (wellarchitected, serverless, saas, etc.)
+  default_lens: wellarchitected
+
+# Logging configuration
+logging:
+  # Log level (DEBUG, INFO, WARNING, ERROR)
+  level: INFO
+  
+  # Log format (json or text)
+  format: json
+
+# Security configuration
+security:
+  # Redact sensitive data before storage
+  redact_sensitive_data: true
+  
+  # Encrypt session files
+  encrypt_sessions: true
+
+# AWS configuration
+aws:
+  # AWS profile to use (optional, defaults to default profile)
+  profile: ""
+  
+  # AWS region (optional, overrides bedrock.region if set)
+  region: ""
