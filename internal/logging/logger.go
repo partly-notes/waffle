@@ -37,14 +37,15 @@ type Config struct {
 
 // DefaultConfig returns default logger configuration
 func DefaultConfig() *Config {
-	homeDir, err := os.UserHomeDir()
+	// Use current working directory
+	cwd, err := os.Getwd()
 	if err != nil {
-		// Fallback to current directory if home dir is not available
-		homeDir = "."
+		// Fallback to current directory if getwd fails
+		cwd = "."
 	}
 	return &Config{
 		Level:      LevelInfo,
-		LogDir:     filepath.Join(homeDir, ".waffle", "logs"),
+		LogDir:     filepath.Join(cwd, ".waffle", "logs"),
 		MaxSizeMB:  100,
 		EnableFile: true,
 		EnableJSON: false,

@@ -7,7 +7,7 @@ This package provides structured logging capabilities for Waffle with support fo
 - **Structured Logging**: Uses Go's `log/slog` for structured, leveled logging
 - **Multiple Outputs**: Supports both file and console logging simultaneously
 - **Log Levels**: DEBUG, INFO, WARNING, ERROR
-- **File Rotation**: Logs are stored in `~/.waffle/logs/` with daily rotation
+- **File Rotation**: Logs are stored in `.waffle/logs/` (current working directory) with daily rotation
 - **Error Context**: Rich error types with troubleshooting guidance
 - **Context Integration**: Correlation IDs, session IDs, and workload IDs
 - **JSON Support**: Optional JSON formatting for machine-readable logs
@@ -178,7 +178,7 @@ The package provides pre-defined troubleshooting messages for common error scena
 
 ### Location
 
-Logs are stored in `~/.waffle/logs/` by default.
+Logs are stored in `.waffle/logs/` (relative to the current working directory where the waffle CLI is executed) by default.
 
 ### File Naming
 
