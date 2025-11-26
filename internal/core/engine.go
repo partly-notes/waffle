@@ -352,10 +352,13 @@ func (e *Engine) evaluateQuestionsWithProgress(ctx context.Context, session *Rev
 	evaluations := make([]*QuestionEvaluation, 0, len(questions))
 
 	for i, question := range questions {
-		slog.InfoContext(ctx, "evaluating question",
-			"question_id", question.ID,
-			"progress", fmt.Sprintf("%d/%d", i+1, len(questions)),
-		)
+		// Only log detailed progress when no progress reporter is active
+		if progress == nil {
+			slog.InfoContext(ctx, "evaluating question",
+				"question_id", question.ID,
+				"progress", fmt.Sprintf("%d/%d", i+1, len(questions)),
+			)
+		}
 
 		if progress != nil {
 			progress.ReportProgress(i+1, len(questions), fmt.Sprintf("Evaluating question %d of %d", i+1, len(questions)))
@@ -372,6 +375,13 @@ func (e *Engine) evaluateQuestionsWithProgress(ctx context.Context, session *Rev
 		}
 
 		evaluations = append(evaluations, evaluation)
+
+		// Log successful evaluation at debug level
+		slog.DebugContext(ctx, "question evaluated",
+			"question_id", question.ID,
+			"choices_count", len(evaluation.SelectedChoices),
+			"confidence", evaluation.ConfidenceScore,
+		)
 	}
 
 	if len(evaluations) == 0 {
@@ -392,10 +402,13 @@ func (e *Engine) submitAnswersWithProgress(ctx context.Context, session *ReviewS
 	errorCount := 0
 
 	for i, evaluation := range evaluations {
-		slog.InfoContext(ctx, "submitting answer",
-			"question_id", evaluation.Question.ID,
-			"progress", fmt.Sprintf("%d/%d", i+1, len(evaluations)),
-		)
+		// Only log detailed progress when no progress reporter is active
+		if progress == nil {
+			slog.InfoContext(ctx, "submitting answer",
+				"question_id", evaluation.Question.ID,
+				"progress", fmt.Sprintf("%d/%d", i+1, len(evaluations)),
+			)
+		}
 
 		if progress != nil {
 			progress.ReportProgress(i+1, len(evaluations), fmt.Sprintf("Submitting answer %d of %d", i+1, len(evaluations)))
@@ -413,6 +426,14 @@ func (e *Engine) submitAnswersWithProgress(ctx context.Context, session *ReviewS
 		}
 
 		successCount++
+
+		// Log successful submission at debug level
+		slog.DebugContext(ctx, "answer submitted",
+			"aws_workload_id", session.AWSWorkloadID,
+			"question_id", evaluation.Question.ID,
+			"choices_count", len(evaluation.SelectedChoices),
+			"confidence", evaluation.ConfidenceScore,
+		)
 	}
 
 	slog.InfoContext(ctx, "answer submission complete",
