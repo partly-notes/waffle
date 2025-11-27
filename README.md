@@ -1,6 +1,11 @@
 # Waffle - Well Architected Framework for Less Effort
+Waffle automates AWS Well-Architected Framework Reviews by analyzing infrastructure-as-code (Terraform code) repositories using Amazon Bedrock foundation models via direct API invocation.
 
-Waffle automates AWS Well-Architected Framework Reviews by analyzing infrastructure-as-code repositories using Amazon Bedrock foundation models via direct API invocation.
+This project was born at the Oslo GenAI Hackathon 2025 as part of the Business Innovation track — designed and built by humans, empowered by Kiro.
+
+## High Level Design
+
+![High Level Design](misc/img/hld.png)
 
 ## Project Structure
 
@@ -214,6 +219,26 @@ waffle compare <session-id-1> <session-id-2>
 
 ## Contributing
 
+We welcome contributions to Waffle! Whether you're fixing bugs, adding features, improving documentation, or suggesting enhancements, your contributions help make this project better for everyone.
+
+### How to Contribute
+
+1. **Fork the repository** and create a feature branch from `main`
+2. **Make your changes** following the coding standards below
+3. **Add or update tests** for your changes
+4. **Ensure all tests pass** and the code builds successfully
+5. **Submit a pull request** with a clear description of your changes
+
+### Code of Conduct
+
+Please be respectful and constructive in all interactions. We're committed to providing a welcoming and inclusive environment for all contributors.
+
+### Reporting Issues
+
+- Use the GitHub issue tracker to report bugs or request features
+- Include clear steps to reproduce any bugs
+- Provide as much context as possible (OS, Go version, etc.)
+
 ### Prerequisites
 
 - Go 1.21 or later
@@ -282,4 +307,27 @@ The project uses a comprehensive testing approach:
 
 ## License
 
-TBD
+MIT License
+
+Copyright (c) 2025 partly-notes
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+## Contribution
+
