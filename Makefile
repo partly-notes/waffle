@@ -108,10 +108,23 @@ build: ## Build for current platform
 	@echo "Build complete: $(BUILD_DIR)/$(BINARY_NAME)"
 
 .PHONY: install
-install: ## Install binary to $GOPATH/bin
-	@echo "Installing $(BINARY_NAME)..."
-	@$(GO_BUILD) -o $(GOPATH)/bin/$(BINARY_NAME) $(MAIN_PATH)
-	@echo "Installed to $(GOPATH)/bin/$(BINARY_NAME)"
+install: ## Install binary to /usr/local/bin (requires sudo)
+	@echo "Installing $(BINARY_NAME) to /usr/local/bin..."
+	@$(GO_BUILD) -o $(BUILD_DIR)/$(BINARY_NAME) $(MAIN_PATH)
+	@sudo mv $(BUILD_DIR)/$(BINARY_NAME) /usr/local/bin/$(BINARY_NAME)
+	@sudo chmod +x /usr/local/bin/$(BINARY_NAME)
+	@echo "✓ Installed to /usr/local/bin/$(BINARY_NAME)"
+	@echo "✓ Run 'waffle --version' to verify"
+
+.PHONY: install-user
+install-user: ## Install binary to $GOPATH/bin (no sudo required)
+	@echo "Installing $(BINARY_NAME) to Go bin directory..."
+	@$(GO_BUILD) -o $$(go env GOPATH)/bin/$(BINARY_NAME) $(MAIN_PATH)
+	@echo "✓ Installed to $$(go env GOPATH)/bin/$(BINARY_NAME)"
+	@echo ""
+	@echo "Note: Make sure $$(go env GOPATH)/bin is in your PATH"
+	@echo "Add this to your ~/.zshrc or ~/.bashrc:"
+	@echo '  export PATH="$$HOME/go/bin:$$PATH"'
 
 .PHONY: build-all
 build-all: clean ## Build for all platforms

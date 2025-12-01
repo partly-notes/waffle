@@ -10,8 +10,8 @@ Waffle looks for a configuration file at `~/.waffle/config.yaml`. If the file do
 
 ```yaml
 bedrock:
-  region: us-east-1
-  model_id: us.anthropic.claude-sonnet-4-20250514-v1:0
+  region: eu-west-1
+  model_id: eu.anthropic.claude-sonnet-4-20250514-v1:0
   max_retries: 3
   timeout: 60
   max_tokens: 4096
@@ -199,8 +199,8 @@ The `waffle init` command uses the validator to check:
 
 | Configuration | Default Value |
 |--------------|---------------|
-| `bedrock.region` | `us-east-1` |
-| `bedrock.model_id` | `us.anthropic.claude-sonnet-4-20250514-v1:0` |
+| `bedrock.region` | `eu-west-1` |
+| `bedrock.model_id` | `eu.anthropic.claude-sonnet-4-20250514-v1:0` |
 | `bedrock.max_retries` | `3` |
 | `bedrock.timeout` | `60` |
 | `bedrock.max_tokens` | `4096` |

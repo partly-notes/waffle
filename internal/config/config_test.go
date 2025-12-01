@@ -13,8 +13,8 @@ func TestDefaultConfig(t *testing.T) {
 	cfg := DefaultConfig()
 
 	// Verify Bedrock defaults
-	assert.Equal(t, "us-east-1", cfg.Bedrock.Region)
-	assert.Equal(t, "us.anthropic.claude-sonnet-4-20250514-v1:0", cfg.Bedrock.ModelID)
+	assert.Equal(t, "eu-west-1", cfg.Bedrock.Region)
+	assert.Equal(t, "eu.anthropic.claude-sonnet-4-20250514-v1:0", cfg.Bedrock.ModelID)
 	assert.Equal(t, 3, cfg.Bedrock.MaxRetries)
 	assert.Equal(t, 60, cfg.Bedrock.Timeout)
 	assert.Equal(t, 4096, cfg.Bedrock.MaxTokens)

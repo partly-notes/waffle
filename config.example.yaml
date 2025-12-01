@@ -6,8 +6,12 @@ bedrock:
   # AWS region where Bedrock is available
   region: us-west-2
   
-  # Bedrock model ID to use for analysis (using cross-region inference profile)
-  model_id: us.anthropic.claude-sonnet-4-20250514-v1:0
+  # Bedrock model ID to use for analysis
+  # Use regional model ID (respects --region flag)
+  model_id: anthropic.claude-sonnet-4-20250514-v1:0
+  
+  # Or use cross-region inference profile (ignores --region, routes to AWS-chosen region)
+  # model_id: eu.anthropic.claude-sonnet-4-20250514-v1:0
   
   # Maximum number of retries for Bedrock API calls
   max_retries: 3

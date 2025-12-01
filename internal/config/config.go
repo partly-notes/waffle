@@ -75,8 +75,8 @@ func DefaultConfig() *Config {
 
 	return &Config{
 		Bedrock: BedrockConfig{
-			Region:      "us-east-1",
-			ModelID:     "us.anthropic.claude-sonnet-4-20250514-v1:0",
+			Region:      "eu-west-1",
+			ModelID:     "anthropic.claude-sonnet-4-20250514-v1:0",
 			MaxRetries:  3,
 			Timeout:     60,
 			MaxTokens:   4096,
