@@ -297,7 +297,7 @@ func (b *BedrockClient) InvokeModel(ctx context.Context, prompt string) (string,
     }
     
     output, err := b.client.InvokeModel(ctx, &bedrockruntime.InvokeModelInput{
-        ModelId:     aws.String("us.anthropic.claude-sonnet-4-20250514-v1:0"),
+        ModelId:     aws.String("eu.anthropic.claude-sonnet-4-20250514-v1:0"),
         Body:        requestBody,
         ContentType: aws.String("application/json"),
     })

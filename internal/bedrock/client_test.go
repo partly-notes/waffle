@@ -44,8 +44,8 @@ func TestNewClient(t *testing.T) {
 func TestDefaultConfig(t *testing.T) {
 	config := DefaultConfig()
 
-	assert.Equal(t, "us.anthropic.claude-sonnet-4-20250514-v1:0", config.ModelID)
-	assert.Equal(t, "us-east-1", config.Region)
+	assert.Equal(t, "eu.anthropic.claude-sonnet-4-20250514-v1:0", config.ModelID)
+	assert.Equal(t, "eu-west-1", config.Region)
 	assert.Equal(t, 4096, config.MaxTokens)
 	assert.Equal(t, 0.7, config.Temperature)
 	assert.Equal(t, 0.9, config.TopP)

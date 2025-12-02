@@ -330,7 +330,7 @@ type WAFRQuestion struct {
 **Purpose**: Leverage foundation models for semantic IaC analysis and WAFR evaluation
 
 **Client Configuration**:
-- Model: Claude Sonnet 4 (us.anthropic.claude-sonnet-4-20250514-v1:0 - cross-region inference profile)
+- Model: Claude Sonnet 4 (eu.anthropic.claude-sonnet-4-20250514-v1:0 - EU cross-region inference profile)
 - API: Bedrock Runtime InvokeModel (direct invocation)
 - No infrastructure deployment required
 - Uses user's AWS credentials and Bedrock access
@@ -1028,8 +1028,8 @@ func GenReviewScope() gopter.Gen {
 
 ```yaml
 bedrock:
-  region: us-east-1
-  model_id: us.anthropic.claude-sonnet-4-20250514-v1:0
+  region: eu-west-1
+  model_id: eu.anthropic.claude-sonnet-4-20250514-v1:0
   max_retries: 3
   timeout: 60
   max_tokens: 4096

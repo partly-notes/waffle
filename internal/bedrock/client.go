@@ -30,10 +30,12 @@ type Config struct {
 }
 
 // DefaultConfig returns default Bedrock configuration
+// Uses eu-west-1 region which is accessible for EU-restricted accounts
+// Uses EU cross-region inference profile for model access
 func DefaultConfig() *Config {
 	return &Config{
-		ModelID:        "us.anthropic.claude-sonnet-4-20250514-v1:0",
-		Region:         "us-east-1",
+		ModelID:        "eu.anthropic.claude-sonnet-4-20250514-v1:0",
+		Region:         "eu-west-1",
 		MaxTokens:      4096,
 		Temperature:    0.7,
 		TopP:           0.9,

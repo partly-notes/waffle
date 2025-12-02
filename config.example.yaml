@@ -4,10 +4,16 @@
 # Bedrock configuration
 bedrock:
   # AWS region where Bedrock is available
-  region: us-west-2
+  # For EU-restricted accounts, use: eu-west-1 or eu-north-1
+  # For US accounts, use: us-east-1 or us-west-2
+  region: eu-west-1
   
-  # Bedrock model ID to use for analysis (using cross-region inference profile)
-  model_id: us.anthropic.claude-sonnet-4-20250514-v1:0
+  # Bedrock model ID to use for analysis
+  # IMPORTANT: Must use inference profile IDs, not direct model IDs
+  # For EU regions, use: eu.anthropic.claude-sonnet-4-20250514-v1:0
+  # For US regions, use: us.anthropic.claude-sonnet-4-20250514-v1:0
+  # Cross-region inference profiles route within their region group (EU stays in EU, US stays in US)
+  model_id: eu.anthropic.claude-sonnet-4-20250514-v1:0
   
   # Maximum number of retries for Bedrock API calls
   max_retries: 3
@@ -73,7 +79,10 @@ security:
 # AWS configuration
 aws:
   # AWS profile to use (optional, defaults to default profile)
+  # Example: profile: "claude" for accounts with EU-only access
   profile: ""
   
   # AWS region (optional, overrides bedrock.region if set)
+  # If your AWS profile is restricted to specific regions (e.g., eu-west-1, eu-north-1),
+  # ensure this matches one of your allowed regions
   region: ""
