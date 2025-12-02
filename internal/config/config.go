@@ -76,7 +76,7 @@ func DefaultConfig() *Config {
 	return &Config{
 		Bedrock: BedrockConfig{
 			Region:      "eu-west-1",
-			ModelID:     "anthropic.claude-sonnet-4-20250514-v1:0",
+			ModelID:     "eu.anthropic.claude-sonnet-4-20250514-v1:0",
 			MaxRetries:  3,
 			Timeout:     60,
 			MaxTokens:   4096,
@@ -155,8 +155,8 @@ func Load() (*Config, error) {
 	}
 	if awsRegion := os.Getenv("AWS_REGION"); awsRegion != "" {
 		cfg.AWS.Region = awsRegion
-		// Also set Bedrock region if AWS_REGION is set
-		if cfg.Bedrock.Region == "us-east-1" {
+		// Also set Bedrock region if AWS_REGION is set and Bedrock region is still default
+		if cfg.Bedrock.Region == "eu-west-1" || cfg.Bedrock.Region == "us-east-1" {
 			cfg.Bedrock.Region = awsRegion
 		}
 	}
