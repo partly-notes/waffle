@@ -212,12 +212,6 @@ waffle results <session-id> --format json --output results.json
 waffle results <session-id> --format pdf --output report.pdf
 ```
 
-#### Compare Milestones
-
-```bash
-waffle compare <session-id-1> <session-id-2>
-```
-
 ## Contributing
 
 ### Prerequisites

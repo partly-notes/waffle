@@ -24,7 +24,6 @@ type WAFRClient interface {
 	UpdateAnswer(ctx context.Context, params *wellarchitected.UpdateAnswerInput, optFns ...func(*wellarchitected.Options)) (*wellarchitected.UpdateAnswerOutput, error)
 	CreateMilestone(ctx context.Context, params *wellarchitected.CreateMilestoneInput, optFns ...func(*wellarchitected.Options)) (*wellarchitected.CreateMilestoneOutput, error)
 	GetConsolidatedReport(ctx context.Context, params *wellarchitected.GetConsolidatedReportInput, optFns ...func(*wellarchitected.Options)) (*wellarchitected.GetConsolidatedReportOutput, error)
-	GetMilestone(ctx context.Context, params *wellarchitected.GetMilestoneInput, optFns ...func(*wellarchitected.Options)) (*wellarchitected.GetMilestoneOutput, error)
 }
 
 // wrapWAFRError wraps a WAFR API error with additional context

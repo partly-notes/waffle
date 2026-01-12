@@ -196,14 +196,6 @@ type ReportGenerator interface {
 		awsWorkloadID string,
 		session *ReviewSession,
 	) (map[string]interface{}, error)
-
-	// CompareMilestones compares two milestones
-	CompareMilestones(
-		ctx context.Context,
-		awsWorkloadID string,
-		milestoneID1 string,
-		milestoneID2 string,
-	) (*MilestoneComparison, error)
 }
 
 // ReportFormat represents the format of a report
@@ -213,13 +205,3 @@ const (
 	ReportFormatPDF  ReportFormat = "pdf"
 	ReportFormatJSON ReportFormat = "json"
 )
-
-// MilestoneComparison represents a comparison between two milestones
-type MilestoneComparison struct {
-	Milestone1      string
-	Milestone2      string
-	Improvements    []string
-	Regressions     []string
-	NewRisks        []string
-	ResolvedRisks   []string
-}

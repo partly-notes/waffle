@@ -156,7 +156,6 @@ func init() {
 	rootCmd.AddCommand(reviewCmd)
 	rootCmd.AddCommand(statusCmd)
 	rootCmd.AddCommand(resultsCmd)
-	rootCmd.AddCommand(compareCmd)
 	rootCmd.AddCommand(initCmd)
 }
 
@@ -228,22 +227,6 @@ Examples:
   waffle results abc123-def456-789 --format pdf --output report.pdf`,
 	Args: cobra.ExactArgs(1),
 	RunE: runResults,
-}
-
-var compareCmd = &cobra.Command{
-	Use:   "compare [session-id-1] [session-id-2]",
-	Short: "Compare two milestones",
-	Long: `Compare two review milestones to identify improvements and regressions.
-
-The comparison shows:
-- Improvements: Risks that have been resolved
-- Regressions: New risks that have appeared
-- Changes in risk levels
-
-Examples:
-  waffle compare abc123-def456-789 xyz789-abc123-456`,
-	Args: cobra.ExactArgs(2),
-	RunE: runCompare,
 }
 
 var initCmd = &cobra.Command{
@@ -643,162 +626,6 @@ func runResults(cmd *cobra.Command, args []string) error {
 
 	logger.Info("results retrieved successfully", "session_id", sessionID, "format", format)
 	return nil
-}
-
-// runCompare executes the compare command
-func runCompare(cmd *cobra.Command, args []string) error {
-	ctx := context.Background()
-	logger := logging.GetLogger()
-	sessionID1 := args[0]
-	sessionID2 := args[1]
-
-	fmt.Fprintf(os.Stderr, "Comparing milestones:\n")
-	fmt.Fprintf(os.Stderr, "  Session 1: %s\n", sessionID1)
-	fmt.Fprintf(os.Stderr, "  Session 2: %s\n", sessionID2)
-	fmt.Fprintf(os.Stderr, "\n")
-
-	// Load configuration
-	cfg, err := loadConfigWithOverrides(cmd)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(ExitGeneralError)
-	}
-
-	// Initialize session manager
-	sessionManager, err := initializeSessionManager(cfg)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: failed to initialize session manager: %v\n", err)
-		logger.Error("failed to initialize session manager", "error", err)
-		os.Exit(ExitGeneralError)
-	}
-
-	// Load both sessions
-	logger.Info("loading sessions", "session_id_1", sessionID1, "session_id_2", sessionID2)
-	session1, err := sessionManager.LoadSession(ctx, sessionID1)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: session 1 not found: %v\n", err)
-		logger.Error("session 1 not found", "session_id", sessionID1, "error", err)
-		os.Exit(ExitGeneralError)
-	}
-
-	session2, err := sessionManager.LoadSession(ctx, sessionID2)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: session 2 not found: %v\n", err)
-		logger.Error("session 2 not found", "session_id", sessionID2, "error", err)
-		os.Exit(ExitGeneralError)
-	}
-
-	// Verify sessions are for the same workload
-	if session1.WorkloadID != session2.WorkloadID {
-		fmt.Fprintf(os.Stderr, "Error: sessions are for different workloads (%s vs %s)\n",
-			session1.WorkloadID, session2.WorkloadID)
-		os.Exit(ExitInvalidArguments)
-	}
-
-	// Check if both sessions have milestones
-	if session1.MilestoneID == "" {
-		fmt.Fprintf(os.Stderr, "Warning: session 1 does not have a milestone\n")
-	}
-	if session2.MilestoneID == "" {
-		fmt.Fprintf(os.Stderr, "Warning: session 2 does not have a milestone\n")
-	}
-
-	if session1.MilestoneID == "" || session2.MilestoneID == "" {
-		fmt.Fprintf(os.Stderr, "Error: both sessions must have milestones for comparison\n")
-		os.Exit(ExitGeneralError)
-	}
-
-	// Initialize AWS config
-	awsCfg, err := initializeAWSConfig(ctx, cfg)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: failed to initialize AWS config: %v\n", err)
-		logger.Error("failed to initialize AWS config", "error", err)
-		os.Exit(ExitGeneralError)
-	}
-
-	// Initialize report generator
-	reportGen, err := initializeReportGenerator(ctx, awsCfg, cfg)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: failed to initialize report generator: %v\n", err)
-		logger.Error("failed to initialize report generator", "error", err)
-		os.Exit(ExitGeneralError)
-	}
-
-	// Compare milestones
-	logger.Info("comparing milestones",
-		"milestone_1", session1.MilestoneID,
-		"milestone_2", session2.MilestoneID,
-	)
-	comparison, err := reportGen.CompareMilestones(ctx, session1.AWSWorkloadID, session1.MilestoneID, session2.MilestoneID)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: failed to compare milestones: %v\n", err)
-		logger.Error("failed to compare milestones", "error", err)
-		os.Exit(ExitGeneralError)
-	}
-
-	// Display summary
-	fmt.Fprintf(os.Stderr, "Comparison Summary:\n")
-	fmt.Fprintf(os.Stderr, "  Improvements: %d\n", len(comparison.Improvements))
-	fmt.Fprintf(os.Stderr, "  Regressions: %d\n", len(comparison.Regressions))
-	fmt.Fprintf(os.Stderr, "  New Risks: %d\n", len(comparison.NewRisks))
-	fmt.Fprintf(os.Stderr, "  Resolved Risks: %d\n", len(comparison.ResolvedRisks))
-	fmt.Fprintf(os.Stderr, "\n")
-
-	// Build comparison output
-	compareOutput := &core.CompareOutput{
-		SessionID1:   sessionID1,
-		SessionID2:   sessionID2,
-		WorkloadID:   session1.WorkloadID,
-		Improvements: convertToChangeOutputs(comparison.Improvements),
-		Regressions:  convertToChangeOutputs(comparison.Regressions),
-		NewRisks:     convertToRiskOutputs(comparison.NewRisks),
-		Summary: &core.ComparisonSummary{
-			TotalImprovements: len(comparison.Improvements),
-			TotalRegressions:  len(comparison.Regressions),
-			TotalNewRisks:     len(comparison.NewRisks),
-		},
-		Metadata: map[string]interface{}{
-			"session_1_created": session1.CreatedAt,
-			"session_2_created": session2.CreatedAt,
-			"milestone_id_1":    session1.MilestoneID,
-			"milestone_id_2":    session2.MilestoneID,
-		},
-	}
-
-	// Output JSON
-	if err := core.WriteJSON(os.Stdout, compareOutput); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: failed to write JSON output: %v\n", err)
-		logger.Error("failed to write JSON output", "error", err)
-		os.Exit(ExitGeneralError)
-	}
-
-	logger.Info("comparison completed successfully",
-		"session_id_1", sessionID1,
-		"session_id_2", sessionID2,
-	)
-	return nil
-}
-
-// convertToChangeOutputs converts string changes to ChangeOutput structs
-func convertToChangeOutputs(changes []string) []*core.ChangeOutput {
-	outputs := make([]*core.ChangeOutput, len(changes))
-	for i, change := range changes {
-		outputs[i] = &core.ChangeOutput{
-			Description: change,
-		}
-	}
-	return outputs
-}
-
-// convertToRiskOutputs converts string risks to RiskOutput structs
-func convertToRiskOutputs(risks []string) []*core.RiskOutput {
-	outputs := make([]*core.RiskOutput, len(risks))
-	for i, risk := range risks {
-		outputs[i] = &core.RiskOutput{
-			Description: risk,
-		}
-	}
-	return outputs
 }
 
 // runInit executes the init command

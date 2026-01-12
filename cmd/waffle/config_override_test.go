@@ -109,7 +109,6 @@ func TestPersistentFlagsAvailableOnAllCommands(t *testing.T) {
 		reviewCmd,
 		statusCmd,
 		resultsCmd,
-		compareCmd,
 		initCmd,
 	}
 

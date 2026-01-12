@@ -216,10 +216,6 @@ func (m *mockReportGenerator) GetResultsJSON(ctx context.Context, awsWorkloadID 
 	return map[string]interface{}{}, nil
 }
 
-func (m *mockReportGenerator) CompareMilestones(ctx context.Context, awsWorkloadID string, milestoneID1 string, milestoneID2 string) (*MilestoneComparison, error) {
-	return &MilestoneComparison{}, nil
-}
-
 // Tests
 
 func TestInitiateReview_Success(t *testing.T) {

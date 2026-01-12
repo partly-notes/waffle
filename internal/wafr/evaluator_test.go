@@ -19,11 +19,11 @@ import (
 type MockWAFRClient struct {
 	CreateWorkloadFunc         func(ctx context.Context, params *wellarchitected.CreateWorkloadInput, optFns ...func(*wellarchitected.Options)) (*wellarchitected.CreateWorkloadOutput, error)
 	GetWorkloadFunc            func(ctx context.Context, params *wellarchitected.GetWorkloadInput, optFns ...func(*wellarchitected.Options)) (*wellarchitected.GetWorkloadOutput, error)
+	ListWorkloadsFunc          func(ctx context.Context, params *wellarchitected.ListWorkloadsInput, optFns ...func(*wellarchitected.Options)) (*wellarchitected.ListWorkloadsOutput, error)
 	ListAnswersFunc            func(ctx context.Context, params *wellarchitected.ListAnswersInput, optFns ...func(*wellarchitected.Options)) (*wellarchitected.ListAnswersOutput, error)
 	UpdateAnswerFunc           func(ctx context.Context, params *wellarchitected.UpdateAnswerInput, optFns ...func(*wellarchitected.Options)) (*wellarchitected.UpdateAnswerOutput, error)
 	CreateMilestoneFunc        func(ctx context.Context, params *wellarchitected.CreateMilestoneInput, optFns ...func(*wellarchitected.Options)) (*wellarchitected.CreateMilestoneOutput, error)
 	GetConsolidatedReportFunc  func(ctx context.Context, params *wellarchitected.GetConsolidatedReportInput, optFns ...func(*wellarchitected.Options)) (*wellarchitected.GetConsolidatedReportOutput, error)
-	GetMilestoneFunc           func(ctx context.Context, params *wellarchitected.GetMilestoneInput, optFns ...func(*wellarchitected.Options)) (*wellarchitected.GetMilestoneOutput, error)
 }
 
 // MockBedrockClient implements the BedrockClient interface for testing
@@ -74,6 +74,15 @@ func (m *MockWAFRClient) GetWorkload(ctx context.Context, params *wellarchitecte
 	}
 }
 
+func (m *MockWAFRClient) ListWorkloads(ctx context.Context, params *wellarchitected.ListWorkloadsInput, optFns ...func(*wellarchitected.Options)) (*wellarchitected.ListWorkloadsOutput, error) {
+	if m.ListWorkloadsFunc != nil {
+		return m.ListWorkloadsFunc(ctx, params, optFns...)
+	}
+	return &wellarchitected.ListWorkloadsOutput{
+		WorkloadSummaries: []types.WorkloadSummary{},
+	}, nil
+}
+
 func (m *MockWAFRClient) ListAnswers(ctx context.Context, params *wellarchitected.ListAnswersInput, optFns ...func(*wellarchitected.Options)) (*wellarchitected.ListAnswersOutput, error) {
 	if m.ListAnswersFunc != nil {
 		return m.ListAnswersFunc(ctx, params, optFns...)
@@ -105,24 +114,6 @@ func (m *MockWAFRClient) GetConsolidatedReport(ctx context.Context, params *well
 	}
 	return &wellarchitected.GetConsolidatedReportOutput{
 		Base64String: aws.String("dGVzdC1kYXRh"), // "test-data" in base64
-	}, nil
-}
-
-func (m *MockWAFRClient) GetMilestone(ctx context.Context, params *wellarchitected.GetMilestoneInput, optFns ...func(*wellarchitected.Options)) (*wellarchitected.GetMilestoneOutput, error) {
-	if m.GetMilestoneFunc != nil {
-		return m.GetMilestoneFunc(ctx, params, optFns...)
-	}
-	return &wellarchitected.GetMilestoneOutput{
-		Milestone: &types.Milestone{
-			MilestoneNumber: params.MilestoneNumber,
-			MilestoneName:   aws.String("test-milestone"),
-			Workload: &types.Workload{
-				RiskCounts: map[string]int32{
-					string(types.RiskHigh):   0,
-					string(types.RiskMedium): 0,
-				},
-			},
-		},
 	}, nil
 }
 
