@@ -39,9 +39,11 @@ type StorageConfig struct {
 
 // IaCConfig contains IaC analysis configuration
 type IaCConfig struct {
-	Framework      string `mapstructure:"framework"`
-	MaxFileSizeMB  int    `mapstructure:"max_file_size_mb"`
-	MaxFiles       int    `mapstructure:"max_files"`
+	Framework        string `mapstructure:"framework"`
+	MaxFileSizeMB    int    `mapstructure:"max_file_size_mb"`
+	MaxFiles         int    `mapstructure:"max_files"`
+	AnalysisApproach string `mapstructure:"analysis_approach"`
+	PlanFilePath     string `mapstructure:"plan_file_path"`
 }
 
 // WAFRConfig contains WAFR-specific configuration
@@ -88,9 +90,11 @@ func DefaultConfig() *Config {
 			RetentionDays: 90,
 		},
 		IaC: IaCConfig{
-			Framework:     "terraform",
-			MaxFileSizeMB: 10,
-			MaxFiles:      10000,
+			Framework:        "terraform",
+			MaxFileSizeMB:    10,
+			MaxFiles:         10000,
+			AnalysisApproach: "hcl",
+			PlanFilePath:     "", // Empty by default - only use when explicitly specified
 		},
 		WAFR: WAFRConfig{
 			DefaultScope: "workload",
@@ -204,6 +208,8 @@ func Save(cfg *Config) error {
 	v.Set("iac.framework", cfg.IaC.Framework)
 	v.Set("iac.max_file_size_mb", cfg.IaC.MaxFileSizeMB)
 	v.Set("iac.max_files", cfg.IaC.MaxFiles)
+	v.Set("iac.analysis_approach", cfg.IaC.AnalysisApproach)
+	v.Set("iac.plan_file_path", cfg.IaC.PlanFilePath)
 
 	v.Set("wafr.default_scope", cfg.WAFR.DefaultScope)
 	v.Set("wafr.default_lens", cfg.WAFR.DefaultLens)
@@ -266,6 +272,16 @@ func (c *Config) Validate() error {
 	}
 	if c.IaC.MaxFiles <= 0 {
 		return fmt.Errorf("iac.max_files must be positive")
+	}
+	if c.IaC.AnalysisApproach == "" {
+		c.IaC.AnalysisApproach = "hcl" // Set default if not specified
+	}
+	validApproaches := map[string]bool{
+		"hcl":  true,
+		"plan": true,
+	}
+	if !validApproaches[c.IaC.AnalysisApproach] {
+		return fmt.Errorf("iac.analysis_approach must be one of: hcl, plan")
 	}
 
 	// Validate WAFR config

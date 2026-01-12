@@ -51,6 +51,18 @@ iac:
   
   # Maximum number of files to process
   max_files: 10000
+  
+  # Analysis approach: 
+  # - "hcl" (default): Analyze .tf files and modules
+  # - "plan": Use plan file analysis (requires plan_file_path)
+  analysis_approach: hcl
+  
+  # Optional: Path to Terraform JSON file (alternative to HCL analysis)
+  # Can be from:
+  #   - terraform plan -out=plan.tfplan && terraform show -json plan.tfplan > plan.json
+  #   - terraform show -json > state.json (current state)
+  # Only used when analysis_approach is "plan" or when --plan-file flag is provided
+  plan_file_path: ""
 
 # Well-Architected Framework Review configuration
 wafr:

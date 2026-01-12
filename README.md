@@ -1,6 +1,15 @@
 # Waffle - Well Architected Framework for Less Effort
 
-Waffle automates AWS Well-Architected Framework Reviews by analyzing infrastructure-as-code repositories using Amazon Bedrock foundation models via direct API invocation.
+Waffle automates AWS Well-Architected Framework Reviews by analyzing Terraform infrastructure using Amazon Bedrock foundation models via direct API invocation. By default, Waffle analyzes your Terraform configuration files (.tf) and modules. Alternatively, you can analyze Terraform plan files for computed values and dependencies.
+
+## Key Features
+
+- **HCL File Analysis**: Analyzes Terraform .tf files and modules by default
+- **JSON File Analysis**: Alternative mode using Terraform JSON files (plan or state) for computed values
+- **Reduced Sensitive Data**: HCL file analysis minimizes exposure of sensitive values
+- **No Infrastructure Required**: Direct Bedrock API invocation - no Lambda or agents to deploy
+- **Portable**: Works anywhere AWS credentials work
+- **Comprehensive**: Supports all WAFR pillars and custom lenses
 
 ## Project Structure
 
@@ -174,14 +183,19 @@ waffle init --profile my-profile --region eu-west-1
 #### Run a WAFR Review
 
 ```bash
-# Review entire workload
+# Review using Terraform configuration files (default)
 waffle review --workload-id my-app
+
+# Review using Terraform plan JSON (alternative)
+terraform plan -out=plan.tfplan && terraform show -json plan.tfplan > plan.json
+waffle review --workload-id my-app --plan-file plan.json
+
+# Review using current state JSON (alternative)
+terraform show -json > state.json
+waffle review --workload-id my-app --plan-file state.json
 
 # Review with quiet output (errors only)
 waffle review --workload-id my-app --quiet
-
-# Review with Terraform plan for complete analysis
-waffle review --workload-id my-app --plan-file plan.json
 
 # Review with specific AWS region
 waffle review --workload-id my-app --region us-west-2
@@ -192,6 +206,14 @@ waffle review --workload-id my-app --scope pillar --pillar security
 # Review specific question
 waffle review --workload-id my-app --scope question --question-id sec_data_1
 ```
+
+**Analysis Modes:**
+- **Default**: Analyzes Terraform configuration files (.tf) and modules after `terraform init`
+- **Alternative**: Uses Terraform JSON files (`--plan-file`) for computed values and dependencies
+  - Plan JSON: `terraform plan -out=plan.tfplan && terraform show -json plan.tfplan > plan.json`
+  - State JSON: `terraform show -json > state.json`
+- **Note**: Only one mode is used per review - configuration files OR JSON file, not both
+- **Benefits**: HCL file analysis requires less sensitive data exposure while still providing comprehensive WAFR analysis
 
 #### Check Review Status
 

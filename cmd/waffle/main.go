@@ -167,15 +167,23 @@ var reviewCmd = &cobra.Command{
 The review command analyzes your infrastructure-as-code and evaluates it against
 AWS Well-Architected Framework best practices.
 
+By default, Waffle analyzes Terraform configuration files (.tf) and modules.
+Alternatively, you can specify a Terraform JSON file for analysis with computed values.
+
 Examples:
-  # Review entire workload
+  # Review using Terraform configuration files (default)
   waffle review --workload-id my-app
+
+  # Review using Terraform plan JSON (alternative)
+  terraform plan -out=plan.tfplan && terraform show -json plan.tfplan > plan.json
+  waffle review --workload-id my-app --plan-file plan.json
+
+  # Review using current state JSON (alternative)
+  terraform show -json > state.json
+  waffle review --workload-id my-app --plan-file state.json
 
   # Review with quiet output (errors only)
   waffle review --workload-id my-app --quiet
-
-  # Review with Terraform plan for complete analysis
-  waffle review --workload-id my-app --plan-file plan.json
 
   # Review with specific AWS region
   waffle review --workload-id my-app --region us-west-2
@@ -187,7 +195,12 @@ Examples:
   waffle review --workload-id my-app --scope pillar --pillar security
 
   # Review specific question
-  waffle review --workload-id my-app --scope question --question-id sec_data_1`,
+  waffle review --workload-id my-app --scope question --question-id sec_data_1
+
+Analysis Modes:
+  - Default: Analyzes Terraform configuration files (.tf) and modules
+  - Alternative: Uses Terraform JSON file (plan or state) for computed values and dependencies
+  - Note: Only one mode is used per review - configuration files OR JSON file, not both`,
 	RunE: runReview,
 }
 
@@ -265,7 +278,7 @@ func init() {
 
 	// Review command flags
 	reviewCmd.Flags().String("workload-id", "", "Workload identifier (required)")
-	reviewCmd.Flags().String("plan-file", "", "Path to Terraform plan JSON file (optional, recommended)")
+	reviewCmd.Flags().String("plan-file", "", "Path to Terraform JSON file (plan or state, alternative to HCL analysis)")
 	reviewCmd.Flags().String("scope", "workload", "Review scope: workload, pillar, or question")
 	reviewCmd.Flags().String("pillar", "", "Specific pillar when scope is pillar (operationalExcellence, security, reliability, performance, costOptimization, sustainability)")
 	reviewCmd.Flags().String("question-id", "", "Specific question ID when scope is question")
@@ -320,7 +333,9 @@ func runReview(cmd *cobra.Command, args []string) error {
 	fmt.Fprintf(os.Stderr, "Directory: %s\n", currentDir)
 	fmt.Fprintf(os.Stderr, "Scope: %s\n", formatScope(scope))
 	if planFile != "" {
-		fmt.Fprintf(os.Stderr, "Terraform Plan: %s\n", planFile)
+		fmt.Fprintf(os.Stderr, "Analysis: Terraform JSON file (%s)\n", planFile)
+	} else {
+		fmt.Fprintf(os.Stderr, "Analysis: Terraform configuration files (.tf)\n")
 	}
 	fmt.Fprintf(os.Stderr, "\n")
 
@@ -352,9 +367,11 @@ func runReview(cmd *cobra.Command, args []string) error {
 		handleReviewError(err)
 	}
 
-	// Set plan file path if provided
+	// Set plan file path from flag or configuration
 	if planFile != "" {
 		session.PlanFilePath = planFile
+	} else if cfg.IaC.PlanFilePath != "" {
+		session.PlanFilePath = cfg.IaC.PlanFilePath
 	}
 
 	logger.Info("executing review", "session_id", session.SessionID)
