@@ -260,6 +260,11 @@ func InitGlobalLogger(config *Config) error {
 		return err
 	}
 	globalLogger = logger
+	
+	// Set the global slog default to use our configured logger
+	// This ensures that direct slog calls throughout the codebase respect our log level
+	slog.SetDefault(logger.logger)
+	
 	return nil
 }
 

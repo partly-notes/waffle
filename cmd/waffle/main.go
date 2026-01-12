@@ -104,7 +104,7 @@ func getLogLevel() logging.LogLevel {
 	case "ERROR":
 		return logging.LevelError
 	default:
-		return logging.LevelInfo
+		return logging.LevelError
 	}
 }
 

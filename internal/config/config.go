@@ -101,7 +101,7 @@ func DefaultConfig() *Config {
 			DefaultLens:  "wellarchitected",
 		},
 		Logging: LoggingConfig{
-			Level:  "INFO",
+			Level:  "ERROR",
 			Format: "json",
 		},
 		Security: SecurityConfig{

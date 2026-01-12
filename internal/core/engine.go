@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	"time"
+
+	"github.com/waffle/waffle/internal/logging"
 )
 
 // Engine implements the CoreEngine interface
@@ -39,7 +41,7 @@ func (e *Engine) InitiateReview(
 	workloadID string,
 	scope ReviewScope,
 ) (*ReviewSession, error) {
-	slog.InfoContext(ctx, "initiating review",
+	logging.GetLogger().InfoContext(ctx, "initiating review",
 		"workload_id", workloadID,
 		"scope_level", scope.Level,
 	)

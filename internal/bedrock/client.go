@@ -15,6 +15,7 @@ import (
 	"golang.org/x/time/rate"
 
 	"github.com/waffle/waffle/internal/core"
+	"github.com/waffle/waffle/internal/logging"
 )
 
 // Config holds configuration for the Bedrock client
@@ -69,7 +70,7 @@ type TokenUsageTracker struct {
 
 // AuditLogger logs all Bedrock operations for audit purposes
 type AuditLogger struct {
-	logger *slog.Logger
+	logger *logging.Logger
 }
 
 // NewClient creates a new Bedrock client
@@ -85,7 +86,7 @@ func NewClient(awsConfig aws.Config, config *Config) *Client {
 		config:       config,
 		limiter:      rate.NewLimiter(rate.Limit(config.RateLimit), int(config.RateLimit)),
 		tokenTracker: &TokenUsageTracker{},
-		auditLogger:  &AuditLogger{logger: slog.Default()},
+		auditLogger:  &AuditLogger{logger: logging.GetLogger()},
 	}
 }
 
