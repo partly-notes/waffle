@@ -49,6 +49,28 @@ waffle review --workload-id my-app
 
 Available levels: `DEBUG`, `INFO`, `WARNING`, `ERROR` (default: `INFO`)
 
+### Command-Line Flags
+
+Control logging verbosity using command-line flags:
+
+```bash
+# Quiet mode - only show errors
+waffle review --workload-id my-app --quiet
+
+# Verbose mode - show debug information
+waffle review --workload-id my-app --verbose
+
+# Set specific log level
+waffle review --workload-id my-app --log-level WARNING
+```
+
+Available flags:
+- `--quiet, -q`: Only show errors (equivalent to `--log-level ERROR`)
+- `--verbose, -v`: Show debug information (equivalent to `--log-level DEBUG`)
+- `--log-level`: Set specific level (DEBUG, INFO, WARNING, ERROR)
+
+**Note**: Command-line flags take precedence over environment variables and config file settings.
+
 ### Log Files
 
 Logs are automatically written to:

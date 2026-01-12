@@ -63,6 +63,7 @@ wafr:
 # Logging configuration
 logging:
   # Log level (DEBUG, INFO, WARNING, ERROR)
+  # Use WARNING or ERROR for less verbose output
   level: INFO
   
   # Log format (json or text)

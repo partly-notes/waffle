@@ -152,6 +152,9 @@ All commands support these global flags:
 
 - `--region`: AWS region for Bedrock and WAFR (overrides config and environment)
 - `--profile`: AWS profile to use (overrides config and environment)
+- `--quiet, -q`: Quiet mode - only show errors
+- `--verbose, -v`: Verbose mode - show debug information
+- `--log-level`: Set log level (DEBUG, INFO, WARNING, ERROR)
 
 ### Commands
 
@@ -173,6 +176,9 @@ waffle init --profile my-profile --region eu-west-1
 ```bash
 # Review entire workload
 waffle review --workload-id my-app
+
+# Review with quiet output (errors only)
+waffle review --workload-id my-app --quiet
 
 # Review with Terraform plan for complete analysis
 waffle review --workload-id my-app --plan-file plan.json

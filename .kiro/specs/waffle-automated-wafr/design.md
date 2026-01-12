@@ -63,6 +63,7 @@ graph TB
 **Global Flags** (available on all commands):
 - `--region` - AWS region for Bedrock and WAFR operations (overrides config file and environment variables)
 - `--profile` - AWS profile to use for credentials (overrides config file and environment variables)
+- `--model-id` - Bedrock model ID to use for analysis (overrides config file and environment variables)
 
 **Command-Specific Parameters**:
 - `--workload-id` - Workload identifier (required for review)
@@ -78,7 +79,7 @@ Configuration values are loaded with the following precedence (later values over
 1. Default values
 2. Configuration file (`~/.waffle/config.yaml`)
 3. Environment variables (`WAFFLE_*`, `AWS_PROFILE`, `AWS_REGION`)
-4. Command-line flags (`--region`, `--profile`)
+4. Command-line flags (`--region`, `--profile`, `--model-id`)
 
 **Note**: The CLI operates on the current working directory as the IaC location. Users should run `waffle review` from within their IaC directory. For best results, provide a Terraform plan JSON file using `--plan-file` to include resolved module contents and computed values.
 
@@ -1067,12 +1068,13 @@ security:
 **Command-Line Flags** (highest precedence):
 - `--region`: AWS region for Bedrock and WAFR operations (overrides config file and environment variables)
 - `--profile`: AWS profile to use for credentials (overrides config file and environment variables)
+- `--model-id`: Bedrock model ID to use for analysis (overrides config file and environment variables)
 
 **Configuration Precedence**:
 1. Default values
 2. Configuration file (`~/.waffle/config.yaml`)
 3. Environment variables (`WAFFLE_*`, `AWS_PROFILE`, `AWS_REGION`)
-4. Command-line flags (`--region`, `--profile`)
+4. Command-line flags (`--region`, `--profile`, `--model-id`)
 
 **First-Time Setup**:
 ```bash

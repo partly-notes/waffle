@@ -156,6 +156,7 @@ Waffle (Well Architected Framework for Less Effort) is a service that automates 
 2. WHEN a user runs a review command THEN the Waffle System SHALL accept parameters for workload identifier and scope selection, using the current directory as the IaC repository location
 3. WHEN a user specifies the --region flag THEN the Waffle System SHALL use that AWS region for both Bedrock and WAFR operations, overriding configuration file and environment variable settings
 4. WHEN a user specifies the --profile flag THEN the Waffle System SHALL use that AWS profile for credentials, overriding configuration file and environment variable settings
-5. WHEN a review is executed via CLI THEN the Waffle System SHALL display progress updates and status information to standard output
-6. WHEN a review completes via CLI THEN the Waffle System SHALL output results in machine-readable format (JSON) for CI/CD integration
-7. WHEN the CLI encounters errors THEN the Waffle System SHALL return appropriate exit codes and error messages for automation compatibility
+5. WHEN a user specifies the --model-id flag THEN the Waffle System SHALL use that Bedrock model ID for analysis, overriding configuration file and environment variable settings
+6. WHEN a review is executed via CLI THEN the Waffle System SHALL display progress updates and status information to standard output
+7. WHEN a review completes via CLI THEN the Waffle System SHALL output results in machine-readable format (JSON) for CI/CD integration
+8. WHEN the CLI encounters errors THEN the Waffle System SHALL return appropriate exit codes and error messages for automation compatibility
