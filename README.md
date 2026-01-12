@@ -109,13 +109,14 @@ docker run --rm -it \
   review --workload-id my-app
 ```
 
-### Build from Source
+### Build and install from Source
 
 ```bash
 git clone https://github.com/partly-notes/waffle.git
 cd waffle
-make build
-sudo mv build/waffle /usr/local/bin/
+make install        # Install to /usr/local/bin (requires sudo)
+# OR
+make install-user   # Install to $GOPATH/bin (no sudo required)
 ```
 
 ## Building
