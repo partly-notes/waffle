@@ -1051,10 +1051,10 @@ func TestMergeWorkloadModels_BothModels(t *testing.T) {
 
 	require.NoError(t, err)
 	require.NotNil(t, merged)
-	assert.Equal(t, "merged", merged.SourceType)
-	assert.Len(t, merged.Resources, 3) // 2 from plan + 1 source-only
+	assert.Equal(t, "hcl_enhanced", merged.SourceType)
+	assert.Len(t, merged.Resources, 3) // 2 from config + 1 plan-only
 
-	// Verify plan resources are prioritized
+	// Verify configuration resources are the foundation
 	var s3Resource *core.Resource
 	var vpcResource *core.Resource
 	var instanceResource *core.Resource
@@ -1143,7 +1143,7 @@ func TestMergeWorkloadModels_BothNil(t *testing.T) {
 
 	require.Error(t, err)
 	assert.Nil(t, merged)
-	assert.Contains(t, err.Error(), "both plan and source models are nil")
+	assert.Contains(t, err.Error(), "both plan and configuration models are nil")
 }
 
 func TestMergeWorkloadModels_ContextCancellation(t *testing.T) {

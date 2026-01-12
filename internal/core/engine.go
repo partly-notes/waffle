@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	"time"
+
+	"github.com/waffle/waffle/internal/logging"
 )
 
 // Engine implements the CoreEngine interface
@@ -39,7 +41,7 @@ func (e *Engine) InitiateReview(
 	workloadID string,
 	scope ReviewScope,
 ) (*ReviewSession, error) {
-	slog.InfoContext(ctx, "initiating review",
+	logging.GetLogger().InfoContext(ctx, "initiating review",
 		"workload_id", workloadID,
 		"scope_level", scope.Level,
 	)
@@ -284,39 +286,20 @@ func (e *Engine) analyzeIaC(ctx context.Context, session *ReviewSession) error {
 
 	var workloadModel *WorkloadModel
 
-	// Parse Terraform plan if provided
+	// Use plan file if explicitly provided, otherwise use configuration files
 	if session.PlanFilePath != "" {
-		slog.InfoContext(ctx, "parsing terraform plan", "path", session.PlanFilePath)
-		planModel, err := e.iacAnalyzer.ParseTerraformPlan(ctx, session.PlanFilePath)
+		slog.InfoContext(ctx, "analyzing terraform JSON file", "path", session.PlanFilePath)
+		workloadModel, err = e.iacAnalyzer.ParseTerraformPlan(ctx, session.PlanFilePath)
 		if err != nil {
-			slog.WarnContext(ctx, "failed to parse terraform plan, falling back to HCL",
-				"error", err,
-			)
-		} else {
-			workloadModel = planModel
-		}
-	}
-
-	// Parse Terraform HCL files
-	slog.InfoContext(ctx, "parsing terraform HCL files")
-	sourceModel, err := e.iacAnalyzer.ParseTerraform(ctx, files)
-	if err != nil {
-		return fmt.Errorf("failed to parse terraform: %w", err)
-	}
-
-	// Merge models if we have both
-	if workloadModel != nil {
-		slog.InfoContext(ctx, "merging plan and source models")
-		mergedModel, err := e.iacAnalyzer.MergeWorkloadModels(ctx, workloadModel, sourceModel)
-		if err != nil {
-			slog.WarnContext(ctx, "failed to merge models, using plan model",
-				"error", err,
-			)
-		} else {
-			workloadModel = mergedModel
+			return fmt.Errorf("failed to parse terraform JSON file: %w", err)
 		}
 	} else {
-		workloadModel = sourceModel
+		// Default: analyze Terraform configuration files
+		slog.InfoContext(ctx, "analyzing terraform configuration files")
+		workloadModel, err = e.iacAnalyzer.ParseTerraform(ctx, files)
+		if err != nil {
+			return fmt.Errorf("failed to parse terraform configuration: %w", err)
+		}
 	}
 
 	// Extract resources
@@ -337,6 +320,13 @@ func (e *Engine) analyzeIaC(ctx context.Context, session *ReviewSession) error {
 	session.WorkloadModel = workloadModel
 	slog.InfoContext(ctx, "IaC analysis complete",
 		"resource_count", len(resources),
+		"source_type", workloadModel.SourceType,
+		"analysis_mode", func() string {
+			if session.PlanFilePath != "" {
+				return "json_file"
+			}
+			return "hcl_files"
+		}(),
 	)
 
 	return nil

@@ -297,31 +297,31 @@ func (a *Analyzer) ValidateTerraformFiles(ctx context.Context, files []core.IaCF
 	return nil
 }
 
-// ParseTerraformPlan parses a Terraform plan JSON file
-func (a *Analyzer) ParseTerraformPlan(ctx context.Context, planFilePath string) (*core.WorkloadModel, error) {
-	slog.InfoContext(ctx, "parsing terraform plan",
-		"plan_file", planFilePath,
+// ParseTerraformPlan parses a Terraform JSON file (plan or state)
+func (a *Analyzer) ParseTerraformPlan(ctx context.Context, jsonFilePath string) (*core.WorkloadModel, error) {
+	slog.InfoContext(ctx, "parsing terraform JSON file",
+		"json_file", jsonFilePath,
 	)
 
-	// Read the plan file
-	planData, err := os.ReadFile(planFilePath)
+	// Read the JSON file
+	jsonData, err := os.ReadFile(jsonFilePath)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return nil, &core.FileAccessError{
-				Path:      planFilePath,
+				Path:      jsonFilePath,
 				Operation: "read",
 				Err:       err,
 			}
 		}
 		if os.IsPermission(err) {
 			return nil, &core.FileAccessError{
-				Path:      planFilePath,
+				Path:      jsonFilePath,
 				Operation: "access",
 				Err:       err,
 			}
 		}
 		return nil, &core.FileAccessError{
-			Path:      planFilePath,
+			Path:      jsonFilePath,
 			Operation: "read",
 			Err:       err,
 		}
@@ -329,15 +329,15 @@ func (a *Analyzer) ParseTerraformPlan(ctx context.Context, planFilePath string) 
 
 	// Parse the JSON
 	var plan TerraformPlan
-	if err := json.Unmarshal(planData, &plan); err != nil {
+	if err := json.Unmarshal(jsonData, &plan); err != nil {
 		return nil, &core.IaCParsingError{
-			File:    planFilePath,
+			File:    jsonFilePath,
 			Err:     err,
 			Context: "invalid JSON format",
 		}
 	}
 
-	slog.DebugContext(ctx, "terraform plan parsed",
+	slog.DebugContext(ctx, "terraform JSON parsed",
 		"format_version", plan.FormatVersion,
 		"terraform_version", plan.TerraformVersion,
 	)
@@ -351,7 +351,7 @@ func (a *Analyzer) ParseTerraformPlan(ctx context.Context, planFilePath string) 
 		resources = append(resources, rootResources...)
 	}
 
-	slog.InfoContext(ctx, "terraform plan parsing complete",
+	slog.InfoContext(ctx, "terraform JSON parsing complete",
 		"total_resources", len(resources),
 	)
 
@@ -363,7 +363,7 @@ func (a *Analyzer) ParseTerraformPlan(ctx context.Context, planFilePath string) 
 		Metadata: map[string]interface{}{
 			"format_version":    plan.FormatVersion,
 			"terraform_version": plan.TerraformVersion,
-			"plan_file":         planFilePath,
+			"json_file":         jsonFilePath,
 		},
 	}
 
@@ -862,38 +862,39 @@ func ctyToGo(val cty.Value) (interface{}, error) {
 	}
 }
 
-// MergeWorkloadModels merges plan and source models
-// Prioritizes plan data when both sources are available
-// Supplements plan data with HCL context (comments, source locations)
-func (a *Analyzer) MergeWorkloadModels(ctx context.Context, planModel, sourceModel *core.WorkloadModel) (*core.WorkloadModel, error) {
+// MergeWorkloadModels merges plan and configuration models
+// Prioritizes configuration data as the foundation and enhances with plan data
+// Configuration provides source context (comments, source locations)
+// Plan provides computed values and dependencies
+func (a *Analyzer) MergeWorkloadModels(ctx context.Context, planModel, configModel *core.WorkloadModel) (*core.WorkloadModel, error) {
 	// Handle cases where only one source is available
-	if planModel == nil && sourceModel == nil {
-		return nil, fmt.Errorf("both plan and source models are nil")
+	if planModel == nil && configModel == nil {
+		return nil, fmt.Errorf("both plan and configuration models are nil")
 	}
 	if planModel == nil {
-		slog.InfoContext(ctx, "no plan model provided, using source model only")
-		return sourceModel, nil
+		slog.InfoContext(ctx, "no plan model provided, using configuration model only")
+		return configModel, nil
 	}
-	if sourceModel == nil {
-		slog.InfoContext(ctx, "no source model provided, using plan model only")
+	if configModel == nil {
+		slog.InfoContext(ctx, "no configuration model provided, using plan model only")
 		return planModel, nil
 	}
 
-	slog.InfoContext(ctx, "merging workload models",
+	slog.InfoContext(ctx, "merging workload models (HCL-based approach)",
+		"hcl_resources", len(configModel.Resources),
 		"plan_resources", len(planModel.Resources),
-		"source_resources", len(sourceModel.Resources),
 	)
 
-	// Create a map of source resources by address for quick lookup
-	sourceResourceMap := make(map[string]*core.Resource)
-	for i := range sourceModel.Resources {
-		sourceResourceMap[sourceModel.Resources[i].Address] = &sourceModel.Resources[i]
+	// Create a map of plan resources by address for quick lookup
+	planResourceMap := make(map[string]*core.Resource)
+	for i := range planModel.Resources {
+		planResourceMap[planModel.Resources[i].Address] = &planModel.Resources[i]
 	}
 
-	// Start with plan resources (they have priority)
-	mergedResources := make([]core.Resource, 0, len(planModel.Resources))
+	// Start with configuration resources (they provide the foundation)
+	mergedResources := make([]core.Resource, 0, len(configModel.Resources))
 
-	for _, planRes := range planModel.Resources {
+	for _, configRes := range configModel.Resources {
 		// Check context cancellation
 		select {
 		case <-ctx.Done():
@@ -901,67 +902,90 @@ func (a *Analyzer) MergeWorkloadModels(ctx context.Context, planModel, sourceMod
 		default:
 		}
 
-		mergedRes := planRes
+		mergedRes := configRes
 
-		// If we have a corresponding source resource, supplement with HCL context
-		if sourceRes, exists := sourceResourceMap[planRes.Address]; exists {
-			// Supplement with source file information
-			if mergedRes.SourceFile == "" {
-				mergedRes.SourceFile = sourceRes.SourceFile
-			}
-			if mergedRes.SourceLine == 0 {
-				mergedRes.SourceLine = sourceRes.SourceLine
+		// If we have a corresponding plan resource, enhance with plan data
+		if planRes, exists := planResourceMap[configRes.Address]; exists {
+			// Enhance with computed values from plan
+			if len(planRes.Properties) > len(configRes.Properties) {
+				// Merge properties, keeping configuration properties and adding plan-computed ones
+				enhancedProperties := make(map[string]interface{})
+				
+				// Start with configuration properties (source of truth for declared values)
+				for k, v := range configRes.Properties {
+					enhancedProperties[k] = v
+				}
+				
+				// Add plan-computed properties that aren't in configuration
+				for k, v := range planRes.Properties {
+					if _, exists := enhancedProperties[k]; !exists {
+						enhancedProperties[k] = v
+					}
+				}
+				
+				mergedRes.Properties = enhancedProperties
 			}
 
-			slog.DebugContext(ctx, "supplemented plan resource with HCL context",
-				"address", planRes.Address,
-				"source_file", sourceRes.SourceFile,
-				"source_line", sourceRes.SourceLine,
+			// Enhance with plan dependencies if more complete
+			if len(planRes.Dependencies) > len(configRes.Dependencies) {
+				mergedRes.Dependencies = planRes.Dependencies
+			}
+
+			// Mark as enhanced with plan data
+			mergedRes.IsFromPlan = true
+
+			slog.DebugContext(ctx, "enhanced HCL resource with plan data",
+				"address", configRes.Address,
+				"hcl_properties", len(configRes.Properties),
+				"plan_properties", len(planRes.Properties),
+				"merged_properties", len(mergedRes.Properties),
 			)
 
-			// Mark that we've processed this source resource
-			delete(sourceResourceMap, planRes.Address)
+			// Mark that we've processed this plan resource
+			delete(planResourceMap, configRes.Address)
 		}
 
 		mergedResources = append(mergedResources, mergedRes)
 	}
 
-	// Add any source resources that weren't in the plan
-	// This can happen with resources that are only in HCL but not yet planned
-	for _, sourceRes := range sourceResourceMap {
-		slog.DebugContext(ctx, "adding source-only resource",
-			"address", sourceRes.Address,
-			"type", sourceRes.Type,
+	// Add any plan resources that weren't in the configuration
+	// This can happen with computed resources or modules that expand at plan time
+	for _, planRes := range planResourceMap {
+		slog.DebugContext(ctx, "adding plan-only resource (computed or module-expanded)",
+			"address", planRes.Address,
+			"type", planRes.Type,
 		)
-		mergedResources = append(mergedResources, *sourceRes)
+		mergedResources = append(mergedResources, *planRes)
 	}
 
-	// Merge metadata
+	// Merge metadata, prioritizing configuration metadata
 	mergedMetadata := make(map[string]interface{})
-	for k, v := range planModel.Metadata {
+	for k, v := range configModel.Metadata {
 		mergedMetadata[k] = v
 	}
-	for k, v := range sourceModel.Metadata {
+	for k, v := range planModel.Metadata {
 		if _, exists := mergedMetadata[k]; !exists {
 			mergedMetadata[k] = v
 		}
 	}
 	mergedMetadata["merged"] = true
+	mergedMetadata["merge_strategy"] = "configuration_first"
+	mergedMetadata["config_resource_count"] = len(configModel.Resources)
 	mergedMetadata["plan_resource_count"] = len(planModel.Resources)
-	mergedMetadata["source_resource_count"] = len(sourceModel.Resources)
+	mergedMetadata["plan_only_resources"] = len(planResourceMap)
 
-	slog.InfoContext(ctx, "workload model merge complete",
+	slog.InfoContext(ctx, "workload model merge complete (configuration-first)",
 		"total_resources", len(mergedResources),
-		"plan_only", len(planModel.Resources)-len(sourceModel.Resources)+len(sourceResourceMap),
-		"source_only", len(sourceResourceMap),
-		"merged", len(planModel.Resources)-len(sourceResourceMap),
+		"config_base", len(configModel.Resources),
+		"plan_enhanced", len(configModel.Resources)-len(planResourceMap),
+		"plan_only", len(planResourceMap),
 	)
 
-	// Build merged model
+	// Build merged model with configuration as the foundation
 	mergedModel := &core.WorkloadModel{
 		Resources:  mergedResources,
-		Framework:  planModel.Framework,
-		SourceType: "merged",
+		Framework:  configModel.Framework,
+		SourceType: "hcl_enhanced", // Indicates HCL with plan enhancement
 		Metadata:   mergedMetadata,
 	}
 

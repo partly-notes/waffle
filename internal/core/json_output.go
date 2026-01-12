@@ -135,34 +135,6 @@ type ResourceOutput struct {
 	Properties map[string]interface{} `json:"properties,omitempty"`
 }
 
-// CompareOutput represents the JSON output for the compare command
-type CompareOutput struct {
-	SessionID1   string                 `json:"session_id_1"`
-	SessionID2   string                 `json:"session_id_2"`
-	WorkloadID   string                 `json:"workload_id"`
-	Improvements []*ChangeOutput        `json:"improvements"`
-	Regressions  []*ChangeOutput        `json:"regressions"`
-	NewRisks     []*RiskOutput          `json:"new_risks"`
-	Summary      *ComparisonSummary     `json:"summary"`
-	Metadata     map[string]interface{} `json:"metadata,omitempty"`
-}
-
-// ChangeOutput represents a change between milestones
-type ChangeOutput struct {
-	QuestionID  string `json:"question_id"`
-	Pillar      string `json:"pillar"`
-	Description string `json:"description"`
-	OldSeverity string `json:"old_severity"`
-	NewSeverity string `json:"new_severity"`
-}
-
-// ComparisonSummary provides a summary of milestone comparison
-type ComparisonSummary struct {
-	TotalImprovements int `json:"total_improvements"`
-	TotalRegressions  int `json:"total_regressions"`
-	TotalNewRisks     int `json:"total_new_risks"`
-}
-
 // WriteJSON writes a JSON output to the specified writer
 func WriteJSON(w io.Writer, data interface{}) error {
 	encoder := json.NewEncoder(w)

@@ -2,7 +2,6 @@ package report
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/waffle/waffle/internal/core"
 	"github.com/waffle/waffle/internal/wafr"
@@ -141,61 +140,4 @@ func (g *Generator) GetResultsJSON(
 	}
 	
 	return results, nil
-}
-
-// milestoneChange is a local struct to unmarshal changes from the result map
-type milestoneChange struct {
-	Type        string `json:"type"`
-	QuestionID  string `json:"question_id"`
-	Description string `json:"description"`
-	Severity    string `json:"severity,omitempty"`
-}
-
-// CompareMilestones compares two milestones
-func (g *Generator) CompareMilestones(
-	ctx context.Context,
-	awsWorkloadID string,
-	milestoneID1 string,
-	milestoneID2 string,
-) (*core.MilestoneComparison, error) {
-	if g.evaluator == nil {
-		return nil, core.ErrEvaluatorNotInitialized
-	}
-
-	// Call the evaluator's CompareMilestones method
-	result, err := g.evaluator.CompareMilestones(ctx, awsWorkloadID, milestoneID1, milestoneID2)
-	if err != nil {
-		return nil, err
-	}
-
-	// Convert the map result to MilestoneComparison struct
-	comparison := &core.MilestoneComparison{
-		Milestone1: milestoneID1,
-		Milestone2: milestoneID2,
-	}
-
-	// Extract changes from the result using JSON marshaling for type safety
-	if changesRaw, ok := result["changes"]; ok {
-		// Marshal and unmarshal to convert to our local type
-		changesJSON, err := json.Marshal(changesRaw)
-		if err == nil {
-			var changes []milestoneChange
-			if err := json.Unmarshal(changesJSON, &changes); err == nil {
-				for _, change := range changes {
-					switch change.Type {
-					case "improvement":
-						comparison.Improvements = append(comparison.Improvements, change.Description)
-					case "regression":
-						comparison.Regressions = append(comparison.Regressions, change.Description)
-					case "new_risk":
-						comparison.NewRisks = append(comparison.NewRisks, change.Description)
-					case "resolved_risk":
-						comparison.ResolvedRisks = append(comparison.ResolvedRisks, change.Description)
-					}
-				}
-			}
-		}
-	}
-
-	return comparison, nil
 }

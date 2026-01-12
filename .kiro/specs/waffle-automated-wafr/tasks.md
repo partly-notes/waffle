@@ -16,6 +16,12 @@
   - Add proper exit codes for different error conditions
   - _Requirements: 10.1, 10.2, 10.5, 11.1_
 
+- [ ] 2.2 Add --model-id CLI flag support
+  - Add --model-id as a global flag available on all commands
+  - Update loadConfigWithOverrides to apply model-id flag override to cfg.Bedrock.ModelID
+  - Ensure flag takes precedence over configuration file and environment variables
+  - _Requirements: 10.5_
+
 - [ ]* 2.1 Write property test for CLI exit codes
   - **Property 24: Error exit codes**
   - **Validates: Requirements 10.5**
