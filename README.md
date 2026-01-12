@@ -69,21 +69,14 @@ waffle/
   - `golang.org/x/time/rate` - Rate limiting
 
 ## Installation
-
-### Download Pre-built Binary
-
-Download the latest release for your platform from [GitHub Releases](https://github.com/partly-notes/waffle/releases):
+### Build and install from Source
 
 ```bash
-# Linux (amd64)
-wget https://github.com/partly-notes/waffle/releases/download/v1.0.0/waffle-v1.0.0-linux-amd64.tar.gz
-tar -xzf waffle-v1.0.0-linux-amd64.tar.gz
-sudo mv waffle-v1.0.0-linux-amd64 /usr/local/bin/waffle
-
-# macOS (Apple Silicon)
-curl -LO https://github.com/partly-notes/waffle/releases/download/v1.0.0/waffle-v1.0.0-darwin-arm64.tar.gz
-tar -xzf waffle-v1.0.0-darwin-arm64.tar.gz
-sudo mv waffle-v1.0.0-darwin-arm64 /usr/local/bin/waffle
+git clone https://github.com/partly-notes/waffle.git
+cd waffle
+make install        # Install to /usr/local/bin (requires sudo)
+# OR
+make install-user   # Install to $GOPATH/bin (no sudo required)
 ```
 
 ### Using Go Install
@@ -115,15 +108,6 @@ docker run --rm -it \
   review --workload-id my-app
 ```
 
-### Build and install from Source
-
-```bash
-git clone https://github.com/partly-notes/waffle.git
-cd waffle
-make install        # Install to /usr/local/bin (requires sudo)
-# OR
-make install-user   # Install to $GOPATH/bin (no sudo required)
-```
 
 ## Building
 
@@ -133,21 +117,6 @@ make install-user   # Install to $GOPATH/bin (no sudo required)
 make build          # Build for current platform
 make test           # Run tests
 make docker-build   # Build Docker image
-```
-
-### Cross-Platform Builds
-
-```bash
-make build-all      # Build for all platforms
-make release        # Create release archives with checksums
-```
-
-### Development
-
-```bash
-make dev            # Quick dev build and version check
-make test-coverage  # Run tests with coverage report
-make lint           # Run linter (requires golangci-lint)
 ```
 
 Run `make help` to see all available targets.
@@ -306,29 +275,6 @@ make vet                 # Run go vet
 make lint                # Run golangci-lint
 ```
 
-## Development Status
-
-This project is currently under development. The core interfaces and project structure have been established. Implementation of individual components is in progress according to the task list in `.kiro/specs/waffle-automated-wafr/tasks.md`.
-
-## Architecture
-
-Waffle follows a modular architecture with clear separation of concerns:
-
-- **Core Engine**: Orchestrates the review workflow
-- **IaC Analyzer**: Parses Terraform configurations and plans
-- **Session Manager**: Manages review session lifecycle
-- **WAFR Evaluator**: Interfaces with AWS Well-Architected Tool API
-- **Bedrock Client**: Invokes foundation models for semantic analysis
-- **Report Generator**: Formats and exports review results
-
-## Testing Strategy
-
-The project uses a comprehensive testing approach:
-
-- **Unit Tests**: Test individual functions and components
-- **Property-Based Tests**: Verify invariants across many inputs using gopter
-- **Integration Tests**: Test component interactions
-- **Mock-Based Tests**: Isolate components for testing
 
 ## License
 
@@ -353,6 +299,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-## Contribution
-
