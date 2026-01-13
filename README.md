@@ -7,7 +7,7 @@ This project was born at the AWS Oslo GenAI Hackathon 2025 as part of the Busine
 
 ## High Level Design
  
-![High Level Design](misc/img/hld.png)
+![High Level Design](misc/img/waffle-hld.png)
 
 ## Example output
 ![Example output](misc/img/wafr-tool-example.png)
