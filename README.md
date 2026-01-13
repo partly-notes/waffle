@@ -1,8 +1,8 @@
 # Waffle - Well Architected Framework for Less Effort
-Waffle automates AWS Well-Architected Framework Reviews by analyzing infrastructure-as-code (Terraform code) repositories using Amazon Bedrock foundation models via direct API invocation.
+Waffle is a CLI utility that automates AWS Well-Architected Framework Reviews by analyzing Terraform infrastructure using Amazon Bedrock foundation models via direct API invocation in AWS. The Well-Architected Framework questions are then being analyzed by Amazon Bedrock and answered and posted directly to the Well-Architected tool in AWS.
 
-Waffle automates AWS Well-Architected Framework Reviews by analyzing Terraform infrastructure using Amazon Bedrock foundation models via direct API invocation. By default, Waffle analyzes your Terraform configuration files (.tf) and modules. Alternatively, you can analyze Terraform plan files for computed values and dependencies.
- 
+By default, Waffle analyzes your Terraform configuration files (.tf) and modules. Alternatively, you can analyze Terraform plan files for potentially greater context with computed values and dependencies.
+
 This project was born at the AWS Oslo GenAI Hackathon 2025 as part of the Business Innovation track — designed and built by humans, empowered by Kiro.
 
 ## High Level Design
