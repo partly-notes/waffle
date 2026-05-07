@@ -105,6 +105,14 @@ func (v *Validator) validateBedrockAccess(ctx context.Context) ValidationResult 
 		Name: "Bedrock Model Access",
 	}
 
+	// Validate region/model prefix consistency
+	if mismatch := v.checkRegionModelMismatch(); mismatch != "" {
+		result.Success = false
+		result.Message = mismatch
+		result.Error = fmt.Errorf("region/model prefix mismatch")
+		return result
+	}
+
 	// Load AWS config
 	opts := []func(*config.LoadOptions) error{
 		config.WithRegion(v.cfg.Bedrock.Region),
@@ -260,4 +268,46 @@ func AllSuccess(results []ValidationResult) bool {
 		}
 	}
 	return true
+}
+
+// checkRegionModelMismatch detects when a cross-region inference profile prefix
+// doesn't match the configured Bedrock region (e.g., eu. prefix with us-east-1).
+func (v *Validator) checkRegionModelMismatch() string {
+	modelID := v.cfg.Bedrock.ModelID
+	region := v.cfg.Bedrock.Region
+
+	type prefixRegion struct {
+		prefix      string
+		regionGroup string
+		suggestion  string
+	}
+
+	mappings := []prefixRegion{
+		{"eu.", "eu-", "us."},
+		{"us.", "us-", "eu."},
+		{"ap.", "ap-", "us."},
+	}
+
+	for _, m := range mappings {
+		if len(modelID) > len(m.prefix) && modelID[:len(m.prefix)] == m.prefix {
+			// Model has this regional prefix — check if region matches
+			if len(region) >= 3 && region[:3] != m.regionGroup {
+				correctPrefix := m.regionGroup[:2] + "."
+				for _, other := range mappings {
+					if len(region) >= 3 && region[:3] == other.regionGroup {
+						correctPrefix = other.prefix
+						break
+					}
+				}
+				correctedModel := correctPrefix + modelID[len(m.prefix):]
+				return fmt.Sprintf(
+					"Model prefix %q is not valid in region %s. Use %q for this region, or change bedrock.region to an %s region",
+					m.prefix, region, correctedModel, m.regionGroup+"* (e.g., "+m.prefix[:2]+"-west-1)",
+				)
+			}
+			break
+		}
+	}
+
+	return ""
 }
