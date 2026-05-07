@@ -120,6 +120,47 @@ Waffle can be configured through:
 
 See `config.example.yaml` for a complete configuration example.
 
+#### Bedrock Model Configuration
+
+Waffle uses Amazon Bedrock cross-region inference profiles. The model ID prefix **must match your configured region**:
+
+| Region group | Model ID prefix | Example |
+|---|---|---|
+| US (us-east-1, us-west-2, ...) | `us.` | `us.anthropic.claude-sonnet-4-20250514-v1:0` |
+| EU (eu-west-1, eu-north-1, ...) | `eu.` | `eu.anthropic.claude-sonnet-4-20250514-v1:0` |
+| AP (ap-southeast-1, ...) | `ap.` | `ap.anthropic.claude-sonnet-4-20250514-v1:0` |
+
+Example `~/.waffle/config.yaml` for a US region:
+
+```yaml
+bedrock:
+  region: us-east-1
+  model_id: us.anthropic.claude-sonnet-4-20250514-v1:0
+```
+
+Example for an EU region:
+
+```yaml
+bedrock:
+  region: eu-west-1
+  model_id: eu.anthropic.claude-sonnet-4-20250514-v1:0
+```
+
+Using a mismatched prefix (e.g., `eu.` model with `us-east-1`) will result in an invalid model error. Run `waffle init` to validate your setup.
+
+You can also set the model and region via CLI flags (highest precedence):
+
+```bash
+waffle review --workload-id my-app --region us-east-1 --model-id us.anthropic.claude-sonnet-4-20250514-v1:0
+```
+
+Or via environment variables:
+
+```bash
+export AWS_REGION=us-east-1
+export WAFFLE_BEDROCK_MODEL_ID=us.anthropic.claude-sonnet-4-20250514-v1:0
+```
+
 ### Global Flags
 
 All commands support these global flags:
