@@ -98,21 +98,6 @@ This installs the binary to `$GOPATH/bin` (or `~/go/bin` by default). Make sure 
 export PATH=$PATH:$(go env GOPATH)/bin
 ```
 
-### Using Docker
-
-```bash
-docker pull ghcr.io/partly-notes/waffle:latest
-
-# Run with AWS credentials
-docker run --rm -it \
-  -v ~/.aws:/root/.aws:ro \
-  -v $(pwd):/workspace \
-  -w /workspace \
-  ghcr.io/partly-notes/waffle:latest \
-  review --workload-id my-app
-```
-
-
 ## Building
 
 ### Quick Build
@@ -120,7 +105,6 @@ docker run --rm -it \
 ```bash
 make build          # Build for current platform
 make test           # Run tests
-make docker-build   # Build Docker image
 ```
 
 Run `make help` to see all available targets.
