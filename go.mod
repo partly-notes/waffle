@@ -1,4 +1,4 @@
-module github.com/waffle/waffle
+module github.com/partly-notes/waffle
 
 go 1.25.4
 

@@ -86,7 +86,7 @@ Environment variables use underscores to represent nested configuration keys. Fo
 ### Loading Configuration
 
 ```go
-import "github.com/waffle/waffle/internal/config"
+import "github.com/partly-notes/waffle/internal/config"
 
 // Load configuration from file and environment
 cfg, err := config.Load()
@@ -124,7 +124,7 @@ The validator checks:
 ```go
 import (
     "context"
-    "github.com/waffle/waffle/internal/config"
+    "github.com/partly-notes/waffle/internal/config"
 )
 
 // Load configuration

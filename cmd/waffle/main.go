@@ -11,14 +11,14 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/spf13/cobra"
-	"github.com/waffle/waffle/internal/bedrock"
-	"github.com/waffle/waffle/internal/config"
-	"github.com/waffle/waffle/internal/core"
-	"github.com/waffle/waffle/internal/iac"
-	"github.com/waffle/waffle/internal/logging"
-	"github.com/waffle/waffle/internal/report"
-	"github.com/waffle/waffle/internal/session"
-	"github.com/waffle/waffle/internal/wafr"
+	"github.com/partly-notes/waffle/internal/bedrock"
+	"github.com/partly-notes/waffle/internal/config"
+	"github.com/partly-notes/waffle/internal/core"
+	"github.com/partly-notes/waffle/internal/iac"
+	"github.com/partly-notes/waffle/internal/logging"
+	"github.com/partly-notes/waffle/internal/report"
+	"github.com/partly-notes/waffle/internal/session"
+	"github.com/partly-notes/waffle/internal/wafr"
 )
 
 var (

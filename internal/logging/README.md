@@ -17,7 +17,7 @@ This package provides structured logging capabilities for Waffle with support fo
 ### Initialize Global Logger
 
 ```go
-import "github.com/waffle/waffle/internal/logging"
+import "github.com/partly-notes/waffle/internal/logging"
 
 func main() {
     // Initialize with default config
@@ -238,7 +238,7 @@ import (
     "os/signal"
     "syscall"
 
-    "github.com/waffle/waffle/internal/logging"
+    "github.com/partly-notes/waffle/internal/logging"
 )
 
 func main() {

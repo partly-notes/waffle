@@ -14,8 +14,8 @@ import (
 	"github.com/aws/smithy-go"
 	"golang.org/x/time/rate"
 
-	"github.com/waffle/waffle/internal/core"
-	"github.com/waffle/waffle/internal/logging"
+	"github.com/partly-notes/waffle/internal/core"
+	"github.com/partly-notes/waffle/internal/logging"
 )
 
 // Config holds configuration for the Bedrock client

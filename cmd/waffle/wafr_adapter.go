@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 
-	"github.com/waffle/waffle/internal/core"
-	"github.com/waffle/waffle/internal/wafr"
+	"github.com/partly-notes/waffle/internal/core"
+	"github.com/partly-notes/waffle/internal/wafr"
 )
 
 // WAFREvaluatorAdapter adapts wafr.Evaluator to core.WAFREvaluator interface

@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/waffle/waffle/internal/core"
+	"github.com/partly-notes/waffle/internal/core"
 )
 
 func TestRetrieveIaCFiles_Success(t *testing.T) {

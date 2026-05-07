@@ -12,8 +12,8 @@ import (
 
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclparse"
-	"github.com/waffle/waffle/internal/core"
-	"github.com/waffle/waffle/internal/redaction"
+	"github.com/partly-notes/waffle/internal/core"
+	"github.com/partly-notes/waffle/internal/redaction"
 	"github.com/zclconf/go-cty/cty"
 )
 

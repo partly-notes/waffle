@@ -3,8 +3,8 @@ package report
 import (
 	"context"
 
-	"github.com/waffle/waffle/internal/core"
-	"github.com/waffle/waffle/internal/wafr"
+	"github.com/partly-notes/waffle/internal/core"
+	"github.com/partly-notes/waffle/internal/wafr"
 )
 
 // Generator implements the ReportGenerator interface
