@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/waffle/waffle/internal/core"
-	"github.com/waffle/waffle/internal/wafr"
+	"github.com/partly-notes/waffle/internal/core"
+	"github.com/partly-notes/waffle/internal/wafr"
 )
 
 // Example demonstrates the complete workflow of using the WAFR client

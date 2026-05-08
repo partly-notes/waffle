@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/waffle/waffle/internal/core"
+	"github.com/partly-notes/waffle/internal/core"
 )
 
 // MockWAFRClient implements the WAFRClient interface for testing

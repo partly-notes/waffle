@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/waffle/waffle/internal/core"
+	"github.com/partly-notes/waffle/internal/core"
 )
 
 // TestScopeFiltering_WorkloadScope tests that workload scope processes all pillars and questions

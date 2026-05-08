@@ -12,7 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/wellarchitected/types"
 	"github.com/aws/smithy-go"
 
-	"github.com/waffle/waffle/internal/core"
+	"github.com/partly-notes/waffle/internal/core"
 )
 
 // WAFRClient defines the interface for AWS Well-Architected Tool operations

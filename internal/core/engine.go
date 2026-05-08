@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/waffle/waffle/internal/logging"
+	"github.com/partly-notes/waffle/internal/logging"
 )
 
 // Engine implements the CoreEngine interface

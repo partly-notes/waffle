@@ -40,7 +40,7 @@ linters-settings:
     simplify: true
     
   goimports:
-    local-prefixes: github.com/waffle/waffle
+    local-prefixes: github.com/partly-notes/waffle
     
   misspell:
     locale: US

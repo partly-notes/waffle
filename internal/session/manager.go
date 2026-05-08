@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/waffle/waffle/internal/core"
+	"github.com/partly-notes/waffle/internal/core"
 )
 
 // Manager implements the SessionManager interface

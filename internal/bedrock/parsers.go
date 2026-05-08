@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/waffle/waffle/internal/core"
+	"github.com/partly-notes/waffle/internal/core"
 )
 
 // SemanticAnalysisResponse represents the response from semantic analysis

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/waffle/waffle/internal/core"
+	"github.com/partly-notes/waffle/internal/core"
 )
 
 // buildSemanticAnalysisPrompt builds a prompt for IaC semantic analysis

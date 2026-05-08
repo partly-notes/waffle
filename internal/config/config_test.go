@@ -341,3 +341,72 @@ func TestExpandPath(t *testing.T) {
 		})
 	}
 }
+
+func TestCheckRegionModelMismatch(t *testing.T) {
+	tests := []struct {
+		name    string
+		region  string
+		modelID string
+		wantErr bool
+	}{
+		{
+			name:    "eu model in eu region - valid",
+			region:  "eu-west-1",
+			modelID: "eu.anthropic.claude-sonnet-4-20250514-v1:0",
+			wantErr: false,
+		},
+		{
+			name:    "us model in us region - valid",
+			region:  "us-east-1",
+			modelID: "us.anthropic.claude-sonnet-4-20250514-v1:0",
+			wantErr: false,
+		},
+		{
+			name:    "eu model in us region - mismatch",
+			region:  "us-east-1",
+			modelID: "eu.anthropic.claude-sonnet-4-20250514-v1:0",
+			wantErr: true,
+		},
+		{
+			name:    "us model in eu region - mismatch",
+			region:  "eu-west-1",
+			modelID: "us.anthropic.claude-sonnet-4-20250514-v1:0",
+			wantErr: true,
+		},
+		{
+			name:    "ap model in ap region - valid",
+			region:  "ap-southeast-1",
+			modelID: "ap.anthropic.claude-sonnet-4-20250514-v1:0",
+			wantErr: false,
+		},
+		{
+			name:    "ap model in us region - mismatch",
+			region:  "us-west-2",
+			modelID: "ap.anthropic.claude-sonnet-4-20250514-v1:0",
+			wantErr: true,
+		},
+		{
+			name:    "no prefix model - no mismatch",
+			region:  "us-east-1",
+			modelID: "anthropic.claude-sonnet-4-20250514-v1:0",
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cfg := DefaultConfig()
+			cfg.Bedrock.Region = tt.region
+			cfg.Bedrock.ModelID = tt.modelID
+
+			v := NewValidator(cfg)
+			result := v.checkRegionModelMismatch()
+
+			if tt.wantErr {
+				assert.NotEmpty(t, result, "expected mismatch error message")
+			} else {
+				assert.Empty(t, result, "expected no mismatch")
+			}
+		})
+	}
+}

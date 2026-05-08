@@ -57,7 +57,7 @@ All AWS API operations include automatic retry logic:
 ```go
 import (
     "context"
-    "github.com/waffle/waffle/internal/wafr"
+    "github.com/partly-notes/waffle/internal/wafr"
 )
 
 // Create client with default configuration
